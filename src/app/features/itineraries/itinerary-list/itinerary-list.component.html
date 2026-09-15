@@ -1,0 +1,52 @@
+<div class="itinerary-list">
+  <div class="itinerary-list__header">
+    <h2>Itineraries</h2>
+    <a routerLink="/itineraries/new" class="btn btn--primary">New itinerary</a>
+  </div>
+
+  @if (loading) {
+    <app-loading-spinner message="Loading itineraries..." />
+  } @else if (error) {
+    <app-loading-spinner
+      [error]="true"
+      message="Could not reach the itinerary service. Is it running on the configured URL?" />
+  } @else if (itineraries.length === 0) {
+    <app-loading-spinner message="No itineraries yet. Create the first one!" />
+  } @else {
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Origin</th>
+          <th>Destination</th>
+          <th>Departure date</th>
+          <th>Duration (days)</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (itinerary of itineraries; track itinerary.id) {
+          <tr>
+            <td>{{ itinerary.originAirportId }}</td>
+            <td>{{ itinerary.destinationAirportId }}</td>
+            <td>{{ itinerary.departureDate | date: 'yyyy-MM-dd' }}</td>
+            <td>{{ itinerary.durationDays }}</td>
+            <td class="itinerary-list__actions">
+              <a [routerLink]="['/itineraries', itinerary.id, 'edit']">Edit</a>
+              <button type="button" class="link-button" (click)="requestDelete(itinerary.id)">
+                Delete
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+
+  <app-confirm-dialog
+    [visible]="showDeleteConfirm"
+    title="Delete itinerary"
+    message="This action cannot be undone. Do you want to continue?"
+    confirmLabel="Delete"
+    (confirmed)="confirmDelete()"
+    (cancelled)="cancelDelete()" />
+</div>

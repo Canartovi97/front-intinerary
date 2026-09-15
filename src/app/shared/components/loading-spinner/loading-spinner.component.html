@@ -1,0 +1,9 @@
+<div class="state-box" [class.state-box--error]="error">
+  @if (error) {
+    <span class="state-box__icon">&#9888;</span>
+    <p>{{ message || 'Something went wrong while loading data.' }}</p>
+  } @else {
+    <span class="state-box__spinner" aria-hidden="true"></span>
+    <p>{{ message || 'Loading...' }}</p>
+  }
+</div>

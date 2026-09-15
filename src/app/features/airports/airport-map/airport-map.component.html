@@ -1,0 +1,21 @@
+<div class="airport-map">
+  <h2>Airport Map</h2>
+
+  @if (loading) {
+    <app-loading-spinner message="Loading airports..." />
+  } @else if (error) {
+    <app-loading-spinner
+      [error]="true"
+      message="Could not reach the airport service. Is it running on the configured URL?" />
+  } @else if (airports.length === 0) {
+    <app-loading-spinner message="No airports to display yet." />
+  } @else {
+    <plotly-plot
+      [data]="graphData"
+      [layout]="graphLayout"
+      [config]="graphConfig"
+      [useResizeHandler]="true"
+      [style]="{ position: 'relative', width: '100%', height: '520px' }">
+    </plotly-plot>
+  }
+</div>

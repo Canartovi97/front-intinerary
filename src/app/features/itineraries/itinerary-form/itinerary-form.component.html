@@ -1,0 +1,66 @@
+<div class="itinerary-form">
+  <a routerLink="/itineraries" class="back-link">&larr; Back to itineraries</a>
+
+  <h2>{{ isEditMode ? 'Edit itinerary' : 'New itinerary' }}</h2>
+
+  @if (loading) {
+    <app-loading-spinner message="Loading itinerary..." />
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="field">
+        <label for="originAirportId">Origin airport ID</label>
+        <input id="originAirportId" type="text" formControlName="originAirportId" />
+        @if (f['originAirportId'].touched && f['originAirportId'].hasError('required')) {
+          <p class="field__error">Origin airport is required.</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="destinationAirportId">Destination airport ID</label>
+        <input id="destinationAirportId" type="text" formControlName="destinationAirportId" />
+        @if (f['destinationAirportId'].touched && f['destinationAirportId'].hasError('required')) {
+          <p class="field__error">Destination airport is required.</p>
+        }
+      </div>
+
+      @if (form.touched && form.hasError('sameOriginDestination')) {
+        <p class="field__error">Origin and destination must be different airports.</p>
+      }
+
+      <div class="field">
+        <label for="departureDate">Departure date</label>
+        <input id="departureDate" type="date" formControlName="departureDate" />
+        @if (f['departureDate'].touched && f['departureDate'].hasError('required')) {
+          <p class="field__error">Departure date is required.</p>
+        }
+        @if (f['departureDate'].touched && f['departureDate'].hasError('pastDate')) {
+          <p class="field__error">Departure date cannot be in the past.</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="durationDays">Duration (days)</label>
+        <input id="durationDays" type="number" formControlName="durationDays" min="1" />
+        @if (f['durationDays'].touched && f['durationDays'].hasError('required')) {
+          <p class="field__error">Duration is required.</p>
+        }
+        @if (f['durationDays'].touched && f['durationDays'].hasError('min')) {
+          <p class="field__error">Duration must be greater than 0.</p>
+        }
+      </div>
+
+      @if (error) {
+        <app-loading-spinner
+          [error]="true"
+          message="Could not save the itinerary. Is the itinerary service running?" />
+      }
+
+      <div class="itinerary-form__actions">
+        <button type="submit" class="btn btn--primary" [disabled]="saving">
+          {{ saving ? 'Saving...' : 'Save' }}
+        </button>
+        <a routerLink="/itineraries" class="btn btn--ghost">Cancel</a>
+      </div>
+    </form>
+  }
+</div>

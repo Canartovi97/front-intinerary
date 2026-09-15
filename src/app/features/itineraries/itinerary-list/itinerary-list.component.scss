@@ -1,0 +1,29 @@
+.itinerary-list {
+  padding: 1.5rem;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+
+    h2 {
+      margin: 0;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: #d92d20;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+}

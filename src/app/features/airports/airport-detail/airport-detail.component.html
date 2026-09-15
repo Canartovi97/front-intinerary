@@ -1,0 +1,19 @@
+<div class="airport-detail">
+  <a routerLink="/airports" class="back-link">&larr; Back to airports</a>
+
+  @if (loading) {
+    <app-loading-spinner message="Loading airport..." />
+  } @else if (error || !airport) {
+    <app-loading-spinner [error]="true" message="Airport not found or the service is unreachable." />
+  } @else {
+    <h2>{{ airport.name }}</h2>
+    <dl class="detail-list">
+      <dt>City</dt>
+      <dd>{{ airport.city }}</dd>
+      <dt>Latitude</dt>
+      <dd>{{ airport.latitude }}</dd>
+      <dt>Longitude</dt>
+      <dd>{{ airport.longitude }}</dd>
+    </dl>
+  }
+</div>
