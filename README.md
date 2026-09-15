@@ -2,6 +2,11 @@
 
 Angular frontend for the distributed itinerary-planning system (graduate architecture course project). This app is a thin client over two independent backend services and does not implement any business logic of its own.
 
+See [docs/architecture.md](docs/architecture.md) for the routing/component diagram
+and request-flow sequence diagram. See [.claude/skills/frontend-angular](.claude/skills/frontend-angular/SKILL.md)
+for the conventions to follow when implementing a new ticket (Claude Code loads
+this automatically when working in this repo).
+
 ## Requirements
 
 - Node.js 20/22 (see `package.json` engines)
