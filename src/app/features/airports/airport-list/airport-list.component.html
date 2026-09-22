@@ -1,4 +1,4 @@
-<div class="airport-list">
+<div class="card airport-list">
   <h2>Airports</h2>
 
   @if (loading) {
@@ -10,29 +10,31 @@
   } @else if (airports.length === 0) {
     <app-loading-spinner message="No airports registered yet." />
   } @else {
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>City</th>
-          <th>Latitude</th>
-          <th>Longitude</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (airport of airports; track airport.id) {
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
           <tr>
-            <td>{{ airport.name }}</td>
-            <td>{{ airport.city }}</td>
-            <td>{{ airport.latitude }}</td>
-            <td>{{ airport.longitude }}</td>
-            <td>
-              <a [routerLink]="['/airports', airport.id]">View</a>
-            </td>
+            <th>Name</th>
+            <th>City</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th></th>
           </tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (airport of airports; track airport.id) {
+            <tr>
+              <td>{{ airport.name }}</td>
+              <td>{{ airport.city }}</td>
+              <td>{{ airport.latitude }}</td>
+              <td>{{ airport.longitude }}</td>
+              <td>
+                <a [routerLink]="['/airports', airport.id]">View</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   }
 </div>
