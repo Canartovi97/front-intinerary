@@ -59,7 +59,8 @@ export class AirportMapComponent implements OnInit {
         lat: airports.map((a) => a.latitude),
         lon: airports.map((a) => a.longitude),
         text: airports.map((a) => `${a.name} (${a.city})`),
-        marker: { size: 9, color: '#2563eb' }
+        hoverinfo: 'text',
+        marker: { size: 9, color: '#2563eb', line: { color: '#ffffff', width: 1 } }
       }
     ];
   }

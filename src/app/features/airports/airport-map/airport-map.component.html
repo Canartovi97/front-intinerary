@@ -1,4 +1,4 @@
-<div class="airport-map">
+<div class="card airport-map">
   <h2>Airport Map</h2>
 
   @if (loading) {
@@ -10,12 +10,14 @@
   } @else if (airports.length === 0) {
     <app-loading-spinner message="No airports to display yet." />
   } @else {
-    <plotly-plot
-      [data]="graphData"
-      [layout]="graphLayout"
-      [config]="graphConfig"
-      [useResizeHandler]="true"
-      [style]="{ position: 'relative', width: '100%', height: '520px' }">
-    </plotly-plot>
+    <div class="airport-map__plot">
+      <plotly-plot
+        [data]="graphData"
+        [layout]="graphLayout"
+        [config]="graphConfig"
+        [useResizeHandler]="true"
+        [style]="{ position: 'relative', width: '100%', height: '480px' }">
+      </plotly-plot>
+    </div>
   }
 </div>
