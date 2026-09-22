@@ -31,6 +31,8 @@
   --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
 
   --font-sans: 'Inter', -apple-system, 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  --content-max-width: 1400px;
 }
 
 * {
@@ -48,6 +50,22 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
+  position: relative;
+}
+
+/* Soft, ambient hero backdrop instead of a flat page background. Sits
+   behind all content (fixed + negative z-index) and is heavily blurred
+   with a light-tinted overlay so text and cards stay fully readable. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: -40px;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.35) 0%, rgba(247, 250, 252, 0.94) 65%),
+    url('/images/hero-sunset-flight.png') center 30% / cover no-repeat;
+  filter: blur(28px);
+  transform: scale(1.05);
 }
 
 h1,
@@ -64,9 +82,9 @@ a {
 /* Page layout */
 
 .page {
-  max-width: 1080px;
+  max-width: var(--content-max-width);
   margin: 0 auto;
-  padding: 1.75rem clamp(1rem, 4vw, 2rem) 3rem;
+  padding: 1.75rem clamp(1rem, 4vw, 2.5rem) 3rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
