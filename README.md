@@ -52,7 +52,8 @@ Output goes to `dist/front-intinerary`.
 ```
 src/app/
   core/                      Cross-cutting concerns
-    interceptors/            authInterceptor - attaches a bearer token from localStorage (plumbing for future auth)
+    interceptors/            authInterceptor (bearer token from localStorage, plumbing for future auth),
+                              correlationIdInterceptor (mints an x-correlation-id per request, see below)
     models/                  Airport, Itinerary TypeScript interfaces shared across features
     services/                AirportService, ItineraryService (HttpClient wrappers)
   features/
@@ -73,8 +74,19 @@ src/app/
       loading-spinner/       Reusable loading / empty / error state indicator
       confirm-dialog/        Reusable confirmation modal (used before deleting an itinerary)
   app.routes.ts               Root route table (redirects "/" to "/airports")
-  app.config.ts                provideRouter + provideHttpClient(withInterceptors([authInterceptor]))
+  app.config.ts                provideRouter + provideHttpClient(withInterceptors([correlationIdInterceptor, authInterceptor]))
 ```
+
+## Correlation IDs (SCRUM-41)
+
+This app is the true first entry point of every request into the system, so
+`correlationIdInterceptor` mints a fresh UUID for every outgoing HTTP call and
+attaches it as an `x-correlation-id` header. The backend services (see
+back-itinerary's `CorrelationIdMiddleware`) reuse that same ID through their own
+structured logs and propagate it further — to each other over HTTP, and into the
+`ItineraryCreated` RabbitMQ event's AMQP `correlationId` property — so one ID
+traces a single user action across every service's logs, from this app all the
+way through the async notification.
 
 ## Validation rules mirrored from the backend
 
