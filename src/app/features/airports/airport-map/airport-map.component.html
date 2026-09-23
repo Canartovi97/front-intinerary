@@ -9,15 +9,7 @@
       message="Could not reach the airport service. Is it running on the configured URL?" />
   } @else if (airports.length === 0) {
     <app-loading-spinner message="No airports to display yet." />
-  } @else {
-    <div class="airport-map__plot">
-      <plotly-plot
-        [data]="graphData"
-        [layout]="graphLayout"
-        [config]="graphConfig"
-        [useResizeHandler]="true"
-        [style]="{ position: 'relative', width: '100%', height: '480px' }">
-      </plotly-plot>
-    </div>
   }
+
+  <div #mapContainer class="airport-map__leaflet" [hidden]="loading || error || airports.length === 0"></div>
 </div>
