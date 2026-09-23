@@ -1,0 +1,41 @@
+<div class="page auth-page">
+  <div class="page-header">
+    <h1>Sign in</h1>
+    <p>Access your saved itineraries.</p>
+  </div>
+
+  <div class="card auth-page__card">
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" formControlName="email" autocomplete="email" />
+        @if (f.email.touched && f.email.hasError('required')) {
+          <p class="field__error">Email is required.</p>
+        }
+        @if (f.email.touched && f.email.hasError('email')) {
+          <p class="field__error">Enter a valid email.</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" formControlName="password" autocomplete="current-password" />
+        @if (f.password.touched && f.password.hasError('required')) {
+          <p class="field__error">Password is required.</p>
+        }
+      </div>
+
+      @if (error) {
+        <p class="field__error">Invalid email or password.</p>
+      }
+
+      <div class="auth-page__actions">
+        <button type="submit" class="btn btn--primary" [disabled]="submitting">
+          {{ submitting ? 'Signing in...' : 'Sign in' }}
+        </button>
+      </div>
+
+      <p class="auth-page__switch">Don't have an account? <a routerLink="/register">Create one</a></p>
+    </form>
+  </div>
+</div>

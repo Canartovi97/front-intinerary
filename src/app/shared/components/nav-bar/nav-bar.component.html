@@ -25,6 +25,13 @@
         <a routerLink="/itineraries" routerLinkActive="active">Itineraries</a>
       </div>
     </div>
-    <button type="button" class="nav-bar__signin">Sign in</button>
+    @if (authService.currentUserEmail(); as email) {
+      <div class="nav-bar__user">
+        <span class="nav-bar__email">{{ email }}</span>
+        <button type="button" class="nav-bar__signin" (click)="signOut()">Sign out</button>
+      </div>
+    } @else {
+      <a routerLink="/login" class="nav-bar__signin">Sign in</a>
+    }
   </div>
 </nav>
