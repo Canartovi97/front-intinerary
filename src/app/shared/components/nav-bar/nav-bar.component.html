@@ -1,7 +1,30 @@
 <nav class="nav-bar">
-  <span class="nav-bar__brand">Itinerary Planner</span>
-  <div class="nav-bar__links">
-    <a routerLink="/airports" routerLinkActive="active">Airports</a>
-    <a routerLink="/itineraries" routerLinkActive="active">Itineraries</a>
+  <div class="nav-bar__inner">
+    <div class="nav-bar__leading">
+      <span class="nav-bar__brand">
+        <svg viewBox="0 0 32 32" width="34" height="34" aria-hidden="true">
+          <defs>
+            <linearGradient id="logoGradient" x1="4" y1="26" x2="28" y2="14" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#0B5ED7" />
+              <stop offset="1" stop-color="#14B8A6" />
+            </linearGradient>
+          </defs>
+          <path
+            d="M4 22c0-4 3.5-6 7-6 2.7 0 4.6 1.4 6.3 2.9C19.3 20.6 21.3 22 24 22c2.8 0 4-1.8 4-4"
+            fill="none"
+            stroke="url(#logoGradient)"
+            stroke-width="4"
+            stroke-linecap="round" />
+          <circle cx="16" cy="8" r="6" fill="#0B5ED7" />
+          <circle cx="16" cy="8" r="2.4" fill="#fff" />
+        </svg>
+        <span class="nav-bar__brand-text">Itinerary Planner</span>
+      </span>
+      <div class="nav-bar__links">
+        <a routerLink="/airports" routerLinkActive="active">Airports</a>
+        <a routerLink="/itineraries" routerLinkActive="active">Itineraries</a>
+      </div>
+    </div>
+    <button type="button" class="nav-bar__signin">Sign in</button>
   </div>
 </nav>

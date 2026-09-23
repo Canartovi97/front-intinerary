@@ -1,25 +1,38 @@
 .airport-detail {
-  padding: 1.5rem;
-
   .back-link {
     display: inline-block;
     margin-bottom: 1rem;
-    color: #2563eb;
+    color: var(--color-primary);
     text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  h2 {
+    margin-top: 0;
   }
 
   .detail-list {
     display: grid;
     grid-template-columns: max-content 1fr;
-    gap: 0.4rem 1rem;
+    gap: 0.6rem 1.5rem;
+    margin: 0;
 
     dt {
       font-weight: 600;
-      color: #475569;
+      color: var(--color-text-muted);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
     }
 
     dd {
       margin: 0;
+      font-size: 1rem;
     }
   }
 }
