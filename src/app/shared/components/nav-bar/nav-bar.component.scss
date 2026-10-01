@@ -73,6 +73,8 @@
   }
 
   &__signin {
+    display: inline-flex;
+    align-items: center;
     flex-shrink: 0;
     background: transparent;
     border: 1.5px solid rgba(255, 255, 255, 0.35);
@@ -83,6 +85,7 @@
     padding: 0.5rem 1.2rem;
     border-radius: var(--radius-pill);
     cursor: pointer;
+    text-decoration: none;
     transition:
       background-color 0.15s ease,
       border-color 0.15s ease;
@@ -91,6 +94,22 @@
       background: rgba(255, 255, 255, 0.1);
       border-color: rgba(255, 255, 255, 0.6);
     }
+  }
+
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  &__email {
+    color: #cbd5e1;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   /* Below this width there isn't room for the full brand text, both nav
@@ -122,6 +141,10 @@
     &__signin {
       padding: 0.45rem 0.9rem;
       font-size: 0.82rem;
+    }
+
+    &__email {
+      display: none;
     }
   }
 }

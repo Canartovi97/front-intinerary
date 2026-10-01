@@ -52,30 +52,62 @@ Output goes to `dist/front-intinerary`.
 ```
 src/app/
   core/                      Cross-cutting concerns
-    interceptors/            authInterceptor (bearer token from localStorage, plumbing for future auth),
-                              correlationIdInterceptor (mints an x-correlation-id per request, see below)
+    guards/                  authGuard - blocks /itineraries when not signed in, redirects to /login
+    interceptors/            correlationIdInterceptor (mints x-correlation-id per request, see below),
+                              authInterceptor (attaches the stored JWT as a bearer token),
+                              authErrorInterceptor (a 401 clears the session and redirects to /login)
     models/                  Airport, Itinerary TypeScript interfaces shared across features
-    services/                AirportService, ItineraryService (HttpClient wrappers)
+    services/                AirportService, ItineraryService, AuthService (HttpClient wrappers)
   features/
     airports/
       airports-overview/     Landing page for /airports (map + list)
-      airport-map/           Plotly geo scatter plot of airports
+      airport-map/           Leaflet map (OpenStreetMap tiles) of airports
       airport-list/          Table of airports
       airport-detail/        Single airport view (/airports/:id)
       airports.routes.ts     Lazy-loaded route config
     itineraries/
-      itinerary-list/        Table of itineraries with edit/delete actions
+      itinerary-list/        Table of itineraries with edit/delete actions (requires sign-in)
       itinerary-form/        Reactive form used for both create (/itineraries/new)
-                              and edit (/itineraries/:id/edit)
-      itineraries.routes.ts  Lazy-loaded route config
+                              and edit (/itineraries/:id/edit) (requires sign-in)
+      itineraries.routes.ts  Lazy-loaded route config, guarded by authGuard
+    auth/
+      login/                 Sign-in form (/login)
+      register/              Account creation form (/register), auto-signs in on success
   shared/
     components/
-      nav-bar/               Top navigation linking to Airports / Itineraries
+      nav-bar/               Top nav — Airports/Itineraries links, sign in/out + current user email
       loading-spinner/       Reusable loading / empty / error state indicator
       confirm-dialog/        Reusable confirmation modal (used before deleting an itinerary)
   app.routes.ts               Root route table (redirects "/" to "/airports")
-  app.config.ts                provideRouter + provideHttpClient(withInterceptors([correlationIdInterceptor, authInterceptor]))
+  app.config.ts                provideRouter + provideHttpClient(withInterceptors([
+                                  correlationIdInterceptor, authInterceptor, authErrorInterceptor
+                                ]))
 ```
+
+## Authentication
+
+Real login/registration, backed by itinerary-service's `/auth` endpoints:
+
+- `AuthService` (`core/services/auth.service.ts`) calls `POST /auth/register`
+  and `POST /auth/login`, storing the returned JWT in `localStorage` under
+  `auth_token` — the same key `authInterceptor` already reads to attach
+  `Authorization: Bearer <token>` to every request.
+- `AuthService.currentUserEmail` is a signal (decoded client-side from the
+  JWT payload, no verification — the token is only trusted because the
+  backend issued and verifies it) that the nav bar reads to show either
+  "Sign in" or the current email + "Sign out".
+- `/itineraries` and its children are gated by `authGuard`, since
+  itinerary-service now rejects unauthenticated requests there with 401 —
+  visiting while signed out redirects straight to `/login` instead of
+  loading the page and immediately failing.
+- `authErrorInterceptor` catches a 401 from any protected call (e.g. an
+  expired token), clears the stale session, and redirects to `/login` —
+  except for the `/auth/login` and `/auth/register` calls themselves, so a
+  wrong password shows inline on the form instead of bouncing the user.
+- The register page auto-signs the user in on success rather than sending
+  them back to a separate login step.
+
+Airport browsing stays fully public — no sign-in required for `/airports`.
 
 ## Correlation IDs (SCRUM-41)
 
