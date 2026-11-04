@@ -34,7 +34,6 @@ export class AirportMapComponent implements AfterViewInit, OnDestroy {
     this.map = L.map(container, {
       minZoom: 4,
       maxBounds: L.latLngBounds([-8, -88], [18, -60]),
-      scrollWheelZoom: false,
       // Tile fade-in relies on a requestAnimationFrame-driven CSS transition,
       // which some browsers never run for a backgrounded/non-visible tab —
       // leaving tiles stuck at opacity 0 even though they loaded fine.
