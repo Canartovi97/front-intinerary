@@ -1,5 +1,8 @@
 export interface Itinerary {
   id: string;
+  name: string;
+  /** Owner: the user that created it (assigned by the backend from the JWT). */
+  userId: string;
   originAirportId: string;
   destinationAirportId: string;
   departureDate: string;
@@ -9,6 +12,6 @@ export interface Itinerary {
 
 /**
  * Payload accepted by the itinerary-service when creating or updating an
- * itinerary. `id` and `createdAt` are assigned by the backend.
+ * itinerary. `id`, `userId` and `createdAt` are assigned by the backend.
  */
-export type ItineraryPayload = Omit<Itinerary, 'id' | 'createdAt'>;
+export type ItineraryPayload = Omit<Itinerary, 'id' | 'userId' | 'createdAt'>;

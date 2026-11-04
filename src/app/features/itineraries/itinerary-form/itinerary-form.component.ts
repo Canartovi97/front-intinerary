@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -5,7 +6,11 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { ItineraryService } from '../../../core/services/itinerary.service';
 import { ItineraryPayload } from '../../../core/models/itinerary.model';
-import { notInPastValidator, originNotEqualToDestinationValidator } from './itinerary-form.validators';
+import {
+  notBlankValidator,
+  notInPastValidator,
+  originNotEqualToDestinationValidator
+} from './itinerary-form.validators';
 
 @Component({
   selector: 'app-itinerary-form',
@@ -21,11 +26,13 @@ export class ItineraryFormComponent implements OnInit {
   loading = false;
   error = false;
   saving = false;
+  saveErrorMessage = '';
 
   private readonly fb = inject(FormBuilder);
 
   form = this.fb.group(
     {
+      name: ['', [Validators.required, Validators.maxLength(100), notBlankValidator()]],
       originAirportId: ['', Validators.required],
       destinationAirportId: ['', Validators.required],
       departureDate: ['', [Validators.required, notInPastValidator()]],
@@ -49,6 +56,7 @@ export class ItineraryFormComponent implements OnInit {
       this.itineraryService.getById(this.itineraryId).subscribe({
         next: (itinerary) => {
           this.form.patchValue({
+            name: itinerary.name,
             originAirportId: itinerary.originAirportId,
             destinationAirportId: itinerary.destinationAirportId,
             departureDate: itinerary.departureDate?.slice(0, 10),
@@ -87,10 +95,25 @@ export class ItineraryFormComponent implements OnInit {
         this.saving = false;
         this.router.navigate(['/itineraries']);
       },
-      error: () => {
+      error: (err: HttpErrorResponse) => {
         this.saving = false;
         this.error = true;
+        this.saveErrorMessage = saveErrorMessage(err);
       }
     });
+  }
+}
+
+/** Maps the itinerary-service's error statuses to a message the user can act on. */
+function saveErrorMessage(err: HttpErrorResponse): string {
+  switch (err.status) {
+    case 404:
+      return 'One of the airports does not exist. Check the origin and destination IDs.';
+    case 503:
+      return 'The Airport Service is unavailable, so the airports could not be validated. Nothing was saved — try again later.';
+    case 400:
+      return err.error?.message ?? 'Some fields are invalid.';
+    default:
+      return 'Could not save the itinerary. Is the itinerary service running?';
   }
 }

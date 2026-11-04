@@ -17,6 +17,17 @@ export function notInPastValidator(): ValidatorFn {
 }
 
 /**
+ * Fails when the value has content but it's only whitespace (the backend
+ * trims names, so "   " would be rejected there anyway).
+ */
+export function notBlankValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value as string | null;
+    return value && value.trim().length === 0 ? { blank: true } : null;
+  };
+}
+
+/**
  * Fails when originAirportId and destinationAirportId are equal.
  * Applied at the FormGroup level since it compares two sibling controls.
  */

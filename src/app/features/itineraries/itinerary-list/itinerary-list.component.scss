@@ -1,4 +1,8 @@
 .itinerary-list {
+  &__name {
+    font-weight: 600;
+  }
+
   &__actions {
     display: flex;
     gap: 0.9rem;
