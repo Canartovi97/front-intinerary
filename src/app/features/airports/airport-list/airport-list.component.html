@@ -1,36 +1,49 @@
-<div class="card airport-list">
-  <h2>Airports</h2>
+<aside class="panel">
+  <div class="panel__tabs">
+    <span class="panel__tab">Airports <small>{{ filtered().length }}</small></span>
+  </div>
 
-  @if (loading) {
-    <app-loading-spinner message="Loading airports..." />
-  } @else if (error) {
-    <app-loading-spinner
-      [error]="true"
-      message="Could not reach the airport service. Is it running on the configured URL?" />
-  } @else if (airports.length === 0) {
-    <app-loading-spinner message="No airports registered yet." />
-  } @else {
-    <div class="table-wrapper">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>City</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (airport of airports; track airport.id) {
-            <tr>
-              <td>{{ airport.name }}</td>
-              <td>{{ airport.city }}</td>
-              <td>
-                <a [routerLink]="['/airports', airport.id]">View</a>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  }
-</div>
+  <div class="panel__filters">
+    <input
+      type="search"
+      placeholder="Search airport or city…"
+      [value]="search()"
+      (input)="search.set($any($event.target).value)" />
+    <select [value]="filter()" (change)="filter.set($any($event.target).value)" aria-label="Filter by coordinates">
+      <option value="all">All</option>
+      <option value="located">On map</option>
+      <option value="missing">No coords</option>
+    </select>
+  </div>
+
+  <ul class="panel__list">
+    @for (airport of filtered(); track airport.id) {
+      <li [class.open]="selectedId() === airport.id">
+        <button type="button" class="row" (click)="selectAirport.emit(airport.id)">
+          <i class="dot" [class.dot--accent]="selectedId() === airport.id" [class.dot--muted]="!hasCoordinates(airport)"></i>
+          <span class="row__name">
+            {{ airport.name }}
+            <small>{{ airport.city }}</small>
+          </span>
+          <span class="tag" [class.tag--muted]="!hasCoordinates(airport)">
+            {{ hasCoordinates(airport) ? 'On map' : 'No coords' }}
+          </span>
+        </button>
+
+        @if (selectedId() === airport.id) {
+          <div class="detail">
+            <dl>
+              <div><dt>Latitude</dt><dd>{{ airport.latitude | number: '1.4-4' }}</dd></div>
+              <div><dt>Longitude</dt><dd>{{ airport.longitude | number: '1.4-4' }}</dd></div>
+              <div><dt>City</dt><dd>{{ airport.city }}</dd></div>
+              <div><dt>ID</dt><dd>{{ airport.id }}</dd></div>
+            </dl>
+            <a class="btn btn--ghost detail__open" [routerLink]="['/airports', airport.id]">Open detail →</a>
+          </div>
+        }
+      </li>
+    } @empty {
+      <li class="empty">No airport matches the filter.</li>
+    }
+  </ul>
+</aside>

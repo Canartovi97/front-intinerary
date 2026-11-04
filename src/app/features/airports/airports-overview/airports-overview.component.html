@@ -1,10 +1,47 @@
-<div class="page">
-  <div class="page-header">
-    <h1>Colombian Airports</h1>
-    <p>Sourced from the internal Airport Service — never directly from api-colombia.com.</p>
+<div class="page airports-overview">
+  <div class="page-header page-header--row">
+    <div>
+      <h1>Colombian Airports</h1>
+      <p>Sourced from the internal Airport Service — never directly from api-colombia.com.</p>
+    </div>
+    @if (loading()) {
+      <span class="pill"><i></i>Connecting…</span>
+    } @else if (error()) {
+      <span class="pill pill--warn"><i></i>Airport Service unreachable</span>
+    } @else {
+      <span class="pill pill--ok"><i></i>Airport Service online</span>
+    }
   </div>
-  <div class="airports-overview__grid">
-    <app-airport-map />
-    <app-airport-list />
-  </div>
+
+  <section class="kpis">
+    <div class="kpi"><span>Airports</span><b>{{ loading() ? '—' : airports().length }}</b></div>
+    <div class="kpi kpi--accent"><span>On the map</span><b>{{ loading() ? '—' : located() }}</b></div>
+    <div class="kpi kpi--ok"><span>Cities</span><b>{{ loading() ? '—' : cities() }}</b></div>
+    <div class="kpi kpi--muted"><span>No coordinates</span><b>{{ loading() ? '—' : airports().length - located() }}</b></div>
+  </section>
+
+  @if (loading()) {
+    <div class="card"><app-loading-spinner message="Loading airports..." /></div>
+  } @else if (error()) {
+    <div class="card">
+      <app-loading-spinner
+        [error]="true"
+        message="Could not reach the airport service. Is it running on the configured URL?" />
+    </div>
+  } @else if (airports().length === 0) {
+    <div class="card"><app-loading-spinner message="No airports registered yet." /></div>
+  } @else {
+    <div class="airports-overview__grid">
+      <app-airport-map
+        class="airports-overview__map"
+        [airports]="airports()"
+        [selectedId]="selectedId()"
+        (selectAirport)="select($event)" />
+      <app-airport-list
+        class="airports-overview__panel"
+        [airports]="airports()"
+        [selectedId]="selectedId()"
+        (selectAirport)="select($event)" />
+    </div>
+  }
 </div>

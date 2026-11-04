@@ -5,3 +5,11 @@ export interface Airport {
   latitude: number;
   longitude: number;
 }
+
+/**
+ * A handful of airports come back from api-colombia with no coordinates at
+ * all; the backend adapter defaults those to (0, 0), in the Gulf of Guinea.
+ */
+export function hasCoordinates(airport: Airport): boolean {
+  return airport.latitude !== 0 || airport.longitude !== 0;
+}
