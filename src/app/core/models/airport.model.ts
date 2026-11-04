@@ -13,3 +13,14 @@ export interface Airport {
 export function hasCoordinates(airport: Airport): boolean {
   return airport.latitude !== 0 || airport.longitude !== 0;
 }
+
+/** A tourist attraction around an airport's destination (from Airport Service). */
+export interface TouristAttraction {
+  id: number;
+  name: string;
+  description: string;
+  city: string;
+  imageUrl: string | null;
+  latitude: number | null;
+  longitude: number | null;
+}

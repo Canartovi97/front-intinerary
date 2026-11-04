@@ -3,80 +3,400 @@
 
   <div class="page-header">
     <h1>{{ isEditMode ? 'Edit itinerary' : 'New itinerary' }}</h1>
-    <p>Fields are validated against the same business rules the backend enforces.</p>
+    <p>Plan the whole trip here: flights, travelers, lodging, things to do and safety info.</p>
   </div>
 
-  <div class="card itinerary-form__card">
-    @if (loading) {
-      <app-loading-spinner message="Loading itinerary..." />
-    } @else {
-      <form [formGroup]="form" (ngSubmit)="submit()">
-        <div class="field">
-          <label for="name">Name</label>
-          <input id="name" type="text" formControlName="name" maxlength="100" placeholder="e.g. Vacaciones en Cartagena" />
-          @if (f['name'].touched && (f['name'].hasError('required') || f['name'].hasError('blank'))) {
-            <p class="field__error">Name is required.</p>
-          }
-          @if (f['name'].touched && f['name'].hasError('maxlength')) {
-            <p class="field__error">Name must be at most 100 characters.</p>
-          }
-        </div>
+  @if (loading) {
+    <div class="card"><app-loading-spinner message="Loading itinerary..." /></div>
+  } @else {
+    <form class="itinerary-form__layout" [formGroup]="form" (ngSubmit)="submit()">
+      <div class="itinerary-form__sections">
+        <!-- 1. Trip -->
+        <section class="card section">
+          <h2><span class="section__num">1</span>Trip</h2>
 
-        <div class="field">
-          <label for="originAirportId">Origin airport ID</label>
-          <input id="originAirportId" type="text" formControlName="originAirportId" />
-          @if (f['originAirportId'].touched && f['originAirportId'].hasError('required')) {
-            <p class="field__error">Origin airport is required.</p>
-          }
-        </div>
+          <div class="field">
+            <label for="name">Name</label>
+            <input id="name" type="text" formControlName="name" maxlength="100" placeholder="e.g. Vacaciones en Cartagena" />
+            @if (f.name.touched && (f.name.hasError('required') || f.name.hasError('blank'))) {
+              <p class="field__error">Name is required.</p>
+            }
+          </div>
 
-        <div class="field">
-          <label for="destinationAirportId">Destination airport ID</label>
-          <input id="destinationAirportId" type="text" formControlName="destinationAirportId" />
-          @if (
-            f['destinationAirportId'].touched && f['destinationAirportId'].hasError('required')
-          ) {
-            <p class="field__error">Destination airport is required.</p>
+          @if (airportsError) {
+            <p class="field__error">Could not load the airport list. Is the Airport Service running?</p>
           }
-        </div>
 
-        @if (form.touched && form.hasError('sameOriginDestination')) {
-          <p class="field__error">Origin and destination must be different airports.</p>
-        }
+          <div class="grid-2">
+            <div class="field">
+              <label for="originAirportId">Origin airport</label>
+              <select id="originAirportId" formControlName="originAirportId">
+                <option value="" disabled>
+                  {{ airportsLoading ? 'Loading airports…' : 'Select the origin airport' }}
+                </option>
+                @for (airport of airports; track airport.id) {
+                  <option [value]="airportValue(airport)">{{ airport.name }} — {{ airport.city }}</option>
+                }
+              </select>
+              @if (f.originAirportId.touched && f.originAirportId.hasError('required')) {
+                <p class="field__error">Origin airport is required.</p>
+              }
+            </div>
 
-        <div class="field">
-          <label for="departureDate">Departure date</label>
-          <input id="departureDate" type="date" formControlName="departureDate" />
-          @if (f['departureDate'].touched && f['departureDate'].hasError('required')) {
-            <p class="field__error">Departure date is required.</p>
-          }
-          @if (f['departureDate'].touched && f['departureDate'].hasError('pastDate')) {
-            <p class="field__error">Departure date cannot be in the past.</p>
-          }
-        </div>
+            <div class="field">
+              <label for="destinationAirportId">Destination airport</label>
+              <select id="destinationAirportId" formControlName="destinationAirportId">
+                <option value="" disabled>
+                  {{ airportsLoading ? 'Loading airports…' : 'Select the destination airport' }}
+                </option>
+                @for (airport of airports; track airport.id) {
+                  <option
+                    [value]="airportValue(airport)"
+                    [disabled]="airportValue(airport) === f.originAirportId.value">
+                    {{ airport.name }} — {{ airport.city }}
+                  </option>
+                }
+              </select>
+              @if (f.destinationAirportId.touched && f.destinationAirportId.hasError('required')) {
+                <p class="field__error">Destination airport is required.</p>
+              }
+            </div>
+          </div>
 
-        <div class="field">
-          <label for="durationDays">Duration (days)</label>
-          <input id="durationDays" type="number" formControlName="durationDays" min="1" />
-          @if (f['durationDays'].touched && f['durationDays'].hasError('required')) {
-            <p class="field__error">Duration is required.</p>
+          @if (form.touched && form.hasError('sameOriginDestination')) {
+            <p class="field__error">Origin and destination must be different airports.</p>
           }
-          @if (f['durationDays'].touched && f['durationDays'].hasError('min')) {
-            <p class="field__error">Duration must be greater than 0.</p>
+
+          <div class="field">
+            <label>Trip type</label>
+            <div class="segmented" role="radiogroup">
+              @for (type of tripTypes; track type) {
+                <label class="segmented__option" [class.active]="f.tripType.value === type">
+                  <input type="radio" formControlName="tripType" [value]="type" />
+                  {{ labels.tripType[type] }}
+                </label>
+              }
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="field">
+              <label for="departureDate">Departure date</label>
+              <input id="departureDate" type="date" formControlName="departureDate" />
+              @if (f.departureDate.touched && f.departureDate.hasError('required')) {
+                <p class="field__error">Departure date is required.</p>
+              }
+              @if (f.departureDate.touched && f.departureDate.hasError('pastDate')) {
+                <p class="field__error">Departure date cannot be in the past.</p>
+              }
+            </div>
+
+            <div class="field">
+              <label for="durationDays">Duration (days)</label>
+              <input id="durationDays" type="number" formControlName="durationDays" min="1" />
+              @if (f.durationDays.touched && f.durationDays.hasError('min')) {
+                <p class="field__error">Duration must be greater than 0.</p>
+              }
+            </div>
+
+            <div class="field">
+              <label>{{ f.tripType.value === 'ROUND_TRIP' ? 'Return flight' : 'Trip ends' }}</label>
+              <p class="computed">{{ endDate ? (endDate | date: 'EEE d MMM y' : 'UTC') : '—' }}</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Travelers -->
+        <section class="card section" formGroupName="travelers">
+          <h2><span class="section__num">2</span>Travelers</h2>
+          <div class="grid-3">
+            <div class="field">
+              <label for="adults">Adults</label>
+              <input id="adults" type="number" formControlName="adults" min="1" max="9" />
+            </div>
+            <div class="field">
+              <label for="children">Children</label>
+              <input id="children" type="number" formControlName="children" min="0" max="8" />
+            </div>
+            <div class="field">
+              <label for="cabinClass">Cabin class</label>
+              <select id="cabinClass" formControlName="cabinClass">
+                @for (cabin of cabinClasses; track cabin) {
+                  <option [value]="cabin">{{ labels.cabinClass[cabin] }}</option>
+                }
+              </select>
+            </div>
+          </div>
+          @if (f.travelers.hasError('tooManyTravelers')) {
+            <p class="field__error">At most 9 travelers per itinerary.</p>
           }
-        </div>
+          @if (f.travelers.controls.adults.hasError('min')) {
+            <p class="field__error">At least one adult must travel.</p>
+          }
+        </section>
+
+        <!-- 3. Lodging & budget -->
+        <section class="card section">
+          <h2><span class="section__num">3</span>Lodging &amp; budget</h2>
+          <div class="grid-3" formGroupName="lodging">
+            <div class="field">
+              <label for="lodgingType">Lodging</label>
+              <select id="lodgingType" formControlName="type">
+                @for (type of lodgingTypes; track type) {
+                  <option [value]="type">{{ labels.lodgingType[type] }}</option>
+                }
+              </select>
+            </div>
+            <div class="field">
+              <label for="lodgingName">Place name</label>
+              <input id="lodgingName" type="text" formControlName="name" placeholder="e.g. Hotel Caribe" />
+            </div>
+            <div class="field">
+              <label for="lodgingAddress">Address</label>
+              <input id="lodgingAddress" type="text" formControlName="address" />
+            </div>
+          </div>
+          <div class="grid-budget" formGroupName="budget">
+            <div class="field">
+              <label for="budgetAmount">Estimated budget</label>
+              <input id="budgetAmount" type="number" formControlName="amount" min="0" step="1000" placeholder="0" />
+              @if (f.budget.controls.amount.hasError('min')) {
+                <p class="field__error">Budget cannot be negative.</p>
+              }
+            </div>
+            <div class="field">
+              <label for="currency">Currency</label>
+              <select id="currency" formControlName="currency">
+                @for (currency of currencies; track currency) {
+                  <option [value]="currency">{{ currency }}</option>
+                }
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. Things to do & guides -->
+        <section class="card section">
+          <h2><span class="section__num">4</span>Things to do &amp; guides</h2>
+
+          <h3>Attractions at the destination</h3>
+          @if (!f.destinationAirportId.value) {
+            <p class="hint">Pick a destination to see what there is to do around it.</p>
+          } @else if (attractionsLoading) {
+            <p class="hint">Looking for attractions around {{ destinationAirport?.city }}…</p>
+          } @else if (attractionsError) {
+            <p class="field__error">Could not load attractions right now. You can still add guides below.</p>
+          } @else if (attractions.length === 0) {
+            <p class="hint">No attractions registered for this destination's department yet.</p>
+          } @else {
+            <div class="attractions">
+              @for (attraction of attractions; track attraction.id) {
+                <button
+                  type="button"
+                  class="attraction"
+                  [class.selected]="isAttractionSelected(attraction)"
+                  [attr.aria-pressed]="isAttractionSelected(attraction)"
+                  (click)="toggleAttraction(attraction)">
+                  @if (attraction.imageUrl && !brokenImages.has(attraction.id)) {
+                    <img
+                      [src]="attraction.imageUrl"
+                      [alt]="attraction.name"
+                      loading="lazy"
+                      referrerpolicy="no-referrer"
+                      (error)="brokenImages.add(attraction.id)" />
+                  } @else {
+                    <span class="attraction__placeholder" aria-hidden="true">📍</span>
+                  }
+                  <span class="attraction__body">
+                    <strong>{{ attraction.name }}</strong>
+                    <small>{{ attraction.city }}</small>
+                    <span class="attraction__desc">{{ attraction.description }}</span>
+                  </span>
+                  <span class="attraction__check">{{ isAttractionSelected(attraction) ? '✓ Added' : '+ Add' }}</span>
+                </button>
+              }
+            </div>
+          }
+
+          @if (selectedAttractions.size) {
+            <div class="chips">
+              @for (picked of selectedAttractions.values(); track picked.attractionId) {
+                <span class="chip">
+                  {{ picked.name }} · {{ picked.city }}
+                  <button type="button" (click)="removeAttraction(picked.attractionId)" aria-label="Remove">×</button>
+                </span>
+              }
+            </div>
+          }
+
+          <h3>Tour guides &amp; operators</h3>
+          <p class="hint">Guides or agencies you hired or want to contact at the destination.</p>
+          <div formArrayName="guides" class="rows">
+            @for (guide of guides.controls; track guide; let i = $index) {
+              <div class="row-card" [formGroupName]="i">
+                <div class="grid-2">
+                  <div class="field">
+                    <label [attr.for]="'guide-' + i + '-name'">Name / agency</label>
+                    <input type="text" [id]="'guide-' + i + '-name'" formControlName="name" />
+                  </div>
+                  <div class="field">
+                    <label [attr.for]="'guide-' + i + '-language'">Languages</label>
+                    <input type="text" [id]="'guide-' + i + '-language'" formControlName="language" placeholder="Español, English" />
+                  </div>
+                  <div class="field">
+                    <label [attr.for]="'guide-' + i + '-phone'">Phone / WhatsApp</label>
+                    <input type="tel" [id]="'guide-' + i + '-phone'" formControlName="phone" />
+                  </div>
+                  <div class="field">
+                    <label [attr.for]="'guide-' + i + '-email'">Email</label>
+                    <input type="email" [id]="'guide-' + i + '-email'" formControlName="email" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label [attr.for]="'guide-' + i + '-notes'">Notes</label>
+                  <input type="text" [id]="'guide-' + i + '-notes'" formControlName="notes" placeholder="Tour, day, time, price…" />
+                </div>
+                @if (guide.touched && guide.hasError('contactRequired')) {
+                  <p class="field__error">Add a phone or an email to reach this guide.</p>
+                }
+                @if (guide.get('email')?.hasError('email')) {
+                  <p class="field__error">Enter a valid email.</p>
+                }
+                <button type="button" class="link-remove" (click)="guides.removeAt(i)">Remove guide</button>
+              </div>
+            }
+          </div>
+          @if (guides.length < 10) {
+            <button type="button" class="btn btn--ghost" (click)="addGuide()">+ Add guide</button>
+          }
+        </section>
+
+        <!-- 5. Safety -->
+        <section class="card section">
+          <h2><span class="section__num">5</span>Safety information</h2>
+
+          <h3>Emergency contacts</h3>
+          <div formArrayName="emergencyContacts" class="rows">
+            @for (contact of emergencyContacts.controls; track contact; let i = $index) {
+              <div class="row-card" [formGroupName]="i">
+                <div class="grid-3">
+                  <div class="field">
+                    <label [attr.for]="'contact-' + i + '-name'">Name</label>
+                    <input type="text" [id]="'contact-' + i + '-name'" formControlName="name" />
+                  </div>
+                  <div class="field">
+                    <label [attr.for]="'contact-' + i + '-relationship'">Relationship</label>
+                    <input type="text" [id]="'contact-' + i + '-relationship'" formControlName="relationship" placeholder="Mother, friend…" />
+                  </div>
+                  <div class="field">
+                    <label [attr.for]="'contact-' + i + '-phone'">Phone</label>
+                    <input type="tel" [id]="'contact-' + i + '-phone'" formControlName="phone" />
+                  </div>
+                </div>
+                @if (contact.touched && contact.invalid) {
+                  <p class="field__error">Name and phone are required.</p>
+                }
+                <button type="button" class="link-remove" (click)="emergencyContacts.removeAt(i)">Remove contact</button>
+              </div>
+            }
+          </div>
+          @if (emergencyContacts.length < 5) {
+            <button type="button" class="btn btn--ghost" (click)="addEmergencyContact()">+ Add emergency contact</button>
+          }
+
+          <h3>Important documents</h3>
+          <p class="hint">Only a reference (number, policy, booking code) — the document itself is not uploaded.</p>
+          <div formArrayName="documents" class="rows">
+            @for (doc of documents.controls; track doc; let i = $index) {
+              <div class="row-card" [class.row-card--warn]="expiresDuringTrip(i)" [formGroupName]="i">
+                <div class="grid-3">
+                  <div class="field">
+                    <label [attr.for]="'document-' + i + '-type'">Document</label>
+                    <select [id]="'document-' + i + '-type'" formControlName="type">
+                      @for (type of documentTypes; track type) {
+                        <option [value]="type">{{ labels.documentType[type] }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label [attr.for]="'document-' + i + '-reference'">Number / reference</label>
+                    <input type="text" [id]="'document-' + i + '-reference'" formControlName="reference" />
+                  </div>
+                  <div class="field">
+                    <label [attr.for]="'document-' + i + '-expiresOn'">Expires on</label>
+                    <input type="date" [id]="'document-' + i + '-expiresOn'" formControlName="expiresOn" />
+                  </div>
+                </div>
+                @if (expiresDuringTrip(i)) {
+                  <p class="warn">⚠ This document expires before the trip ends.</p>
+                }
+                <button type="button" class="link-remove" (click)="documents.removeAt(i)">Remove document</button>
+              </div>
+            }
+          </div>
+          @if (documents.length < 10) {
+            <button type="button" class="btn btn--ghost" (click)="addDocument()">+ Add document</button>
+          }
+        </section>
+
+        <!-- 6. Status & notes -->
+        <section class="card section">
+          <h2><span class="section__num">6</span>Status &amp; notes</h2>
+          <div class="field">
+            <label>Status</label>
+            <div class="segmented" role="radiogroup">
+              @for (status of statuses; track status) {
+                <label class="segmented__option" [class.active]="f.status.value === status" [attr.data-status]="status">
+                  <input type="radio" formControlName="status" [value]="status" />
+                  {{ labels.status[status] }}
+                </label>
+              }
+            </div>
+          </div>
+          <div class="field">
+            <label for="notes">Notes</label>
+            <textarea id="notes" formControlName="notes" rows="4" maxlength="2000" placeholder="Anything else to remember for this trip"></textarea>
+          </div>
+        </section>
+      </div>
+
+      <!-- Summary -->
+      <aside class="card summary">
+        <h2>Summary</h2>
+        <dl>
+          <div><dt>Route</dt><dd>{{ destinationAirport?.city || '—' }}</dd></div>
+          <div><dt>Trip</dt><dd>{{ labels.tripType[f.tripType.value] }}</dd></div>
+          <div><dt>Ends</dt><dd>{{ endDate ? (endDate | date: 'd MMM y' : 'UTC') : '—' }}</dd></div>
+          <div>
+            <dt>Travelers</dt>
+            <dd>{{ f.travelers.value.adults || 0 }} adults · {{ f.travelers.value.children || 0 }} children</dd>
+          </div>
+          <div>
+            <dt>Budget</dt>
+            <dd>
+              {{ f.budget.value.amount != null && $any(f.budget.value.amount) !== '' ? (f.budget.value.amount | number: '1.0-0') + ' ' + f.budget.value.currency : '—' }}
+            </dd>
+          </div>
+          <div><dt>Attractions</dt><dd>{{ selectedAttractions.size }}</dd></div>
+          <div><dt>Guides</dt><dd>{{ guides.length }}</dd></div>
+          <div><dt>Emergency contacts</dt><dd>{{ emergencyContacts.length }}</dd></div>
+          <div><dt>Documents</dt><dd>{{ documents.length }}</dd></div>
+        </dl>
 
         @if (error) {
-          <app-loading-spinner [error]="true" [message]="saveErrorMessage" />
+          <p class="summary__error">⚠ {{ saveErrorMessage || 'Could not load this itinerary.' }}</p>
+        }
+        @if (form.invalid && form.touched) {
+          <p class="summary__hint">Some fields need attention.</p>
         }
 
         <div class="itinerary-form__actions">
           <button type="submit" class="btn btn--primary" [disabled]="saving">
-            {{ saving ? 'Saving...' : 'Save' }}
+            {{ saving ? 'Saving...' : 'Save itinerary' }}
           </button>
           <a routerLink="/itineraries" class="btn btn--ghost">Cancel</a>
         </div>
-      </form>
-    }
-  </div>
+      </aside>
+    </form>
+  }
 </div>

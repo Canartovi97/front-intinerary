@@ -27,6 +27,23 @@ export function notBlankValidator(): ValidatorFn {
   };
 }
 
+/** Fails when adults + children exceed the per-itinerary maximum. */
+export function maxTravelersValidator(max: number): ValidatorFn {
+  return (group: AbstractControl): ValidationErrors | null => {
+    const total = Number(group.get('adults')?.value ?? 0) + Number(group.get('children')?.value ?? 0);
+    return total > max ? { tooManyTravelers: { max } } : null;
+  };
+}
+
+/** A guide is only useful with a way to reach them: phone or email. */
+export function atLeastOneContactValidator(): ValidatorFn {
+  return (group: AbstractControl): ValidationErrors | null => {
+    const phone = (group.get('phone')?.value as string | null)?.trim();
+    const email = (group.get('email')?.value as string | null)?.trim();
+    return phone || email ? null : { contactRequired: true };
+  };
+}
+
 /**
  * Fails when originAirportId and destinationAirportId are equal.
  * Applied at the FormGroup level since it compares two sibling controls.

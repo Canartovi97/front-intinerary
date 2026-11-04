@@ -22,10 +22,11 @@
           <thead>
             <tr>
               <th>Name</th>
-              <th>Origin</th>
-              <th>Destination</th>
-              <th>Departure date</th>
-              <th>Duration (days)</th>
+              <th>Status</th>
+              <th>Route</th>
+              <th>Dates</th>
+              <th>Travelers</th>
+              <th>Plan</th>
               <th></th>
             </tr>
           </thead>
@@ -33,12 +34,34 @@
             @for (itinerary of itineraries; track itinerary.id) {
               <tr>
                 <td class="itinerary-list__name">{{ itinerary.name }}</td>
-                <td>{{ itinerary.originAirportId }}</td>
-                <td>{{ itinerary.destinationAirportId }}</td>
-                <td>{{ itinerary.departureDate | date: 'yyyy-MM-dd' : 'UTC' }}</td>
-                <td>{{ itinerary.durationDays }}</td>
+                <td>
+                  <span class="status" [attr.data-status]="itinerary.status">{{ labels.status[itinerary.status] }}</span>
+                </td>
+                <td>{{ airportName(itinerary.originAirportId) }} → {{ airportName(itinerary.destinationAirportId) }}</td>
+                <td class="itinerary-list__dates">
+                  {{ itinerary.departureDate | date: 'd MMM y' : 'UTC' }}
+                  <small>
+                    {{ itinerary.returnDate ? 'Return ' + (itinerary.returnDate | date: 'd MMM' : 'UTC') : 'One way' }}
+                    · {{ itinerary.durationDays }} d
+                  </small>
+                </td>
+                <td>{{ itinerary.travelers.adults + itinerary.travelers.children }} · {{ labels.cabinClass[itinerary.travelers.cabinClass] }}</td>
+                <td class="itinerary-list__plan">
+                  @if (itinerary.attractions.length) {
+                    <span title="Attractions">📍 {{ itinerary.attractions.length }}</span>
+                  }
+                  @if (itinerary.guides.length) {
+                    <span title="Guides">🧭 {{ itinerary.guides.length }}</span>
+                  }
+                  @if (itinerary.emergencyContacts.length) {
+                    <span title="Emergency contacts">🆘 {{ itinerary.emergencyContacts.length }}</span>
+                  }
+                  @if (itinerary.documentsExpiringDuringTrip.length) {
+                    <span class="warn" title="Documents expiring during the trip">⚠ docs</span>
+                  }
+                </td>
                 <td class="itinerary-list__actions">
-                  <a [routerLink]="['/itineraries', itinerary.id, 'edit']">Edit</a>
+                  <a [routerLink]="['/itineraries', itinerary.id, 'edit']">Open</a>
                   <button type="button" class="link-button" (click)="requestDelete(itinerary.id)">
                     Delete
                   </button>
