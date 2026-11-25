@@ -1,6 +1,10 @@
 @if (visible) {
-  <div class="overlay" (click)="cancelled.emit()">
-    <div class="dialog" (click)="$event.stopPropagation()">
+  <!-- Clicking the backdrop (not the dialog itself) or pressing Escape cancels. -->
+  <div
+    class="overlay"
+    (click)="$event.target === $event.currentTarget && cancelled.emit()"
+    (keydown.escape)="cancelled.emit()">
+    <dialog class="dialog" open aria-modal="true">
       <h3>{{ title || ('common.confirmTitle' | t) }}</h3>
       <p>{{ message || ('common.confirmMessage' | t) }}</p>
       <div class="dialog__actions">
@@ -11,6 +15,6 @@
           {{ confirmLabel || ('common.confirm' | t) }}
         </button>
       </div>
-    </div>
+    </dialog>
   </div>
 }

@@ -47,6 +47,29 @@ npm run build
 
 Output goes to `dist/front-intinerary`.
 
+## Docker
+
+```bash
+docker compose up --build   # http://localhost:4200 (nginx), start the back-end first
+```
+
+The image is built with `--configuration docker` (`environment.docker.ts`), which
+points the app at the back-end ports published on the host (3000 / 3001).
+
+## CI/CD and SonarQube
+
+- `.github/workflows/ci.yml`: on every PR / push to `dev`, `release`, `main` — production
+  build, unit tests with coverage in headless Chrome (`npm run test:ci`), SonarQube
+  analysis + quality gate (when the `SONAR_HOST_URL` / `SONAR_TOKEN` secrets exist) and
+  Docker image build.
+- `.github/workflows/cd.yml`: on every merge into `main` — publishes
+  `ghcr.io/canartovi97/front-intinerary:<sha>` and `:latest`, deploys it and smoke-tests
+  `/`, `/airports` and `/itineraries`.
+- Local analysis: start SonarQube from `back-itinerary/docker-compose.sonar.yml`, then
+  `npm run test:ci && SONAR_TOKEN=<token> npm run sonar`.
+
+Full description in `back-itinerary/docs/ci-cd.md`.
+
 ## Project structure
 
 ```

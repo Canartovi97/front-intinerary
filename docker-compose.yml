@@ -1,0 +1,11 @@
+# Front-end on its own: http://localhost:4200
+# It calls the APIs on localhost:3000 / 3001, so start the back-end first
+# (docker compose up --build in back-itinerary).
+services:
+  front:
+    build: .
+    image: ghcr.io/canartovi97/front-intinerary:latest
+    container_name: front-intinerary
+    ports:
+      - '4200:80'
+    restart: unless-stopped
