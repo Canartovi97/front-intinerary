@@ -1,17 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { AirportService } from '../../../core/services/airport.service';
 import { ItineraryService } from '../../../core/services/itinerary.service';
-import { Itinerary, LABELS } from '../../../core/models/itinerary.model';
+import { Itinerary } from '../../../core/models/itinerary.model';
+import { I18nService } from '../../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 
 @Component({
   selector: 'app-itinerary-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, LoadingSpinnerComponent, ConfirmDialogComponent],
+  imports: [CommonModule, RouterLink, LoadingSpinnerComponent, ConfirmDialogComponent, TranslatePipe],
   templateUrl: './itinerary-list.component.html',
   styleUrl: './itinerary-list.component.scss'
 })
@@ -19,7 +21,7 @@ export class ItineraryListComponent implements OnInit {
   loading = true;
   error = false;
   itineraries: Itinerary[] = [];
-  protected readonly labels = LABELS;
+  protected readonly i18n = inject(I18nService);
 
   showDeleteConfirm = false;
   pendingDeleteId: string | null = null;

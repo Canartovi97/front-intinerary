@@ -1,18 +1,18 @@
 <aside class="panel">
   <div class="panel__tabs">
-    <span class="panel__tab">Airports <small>{{ filtered().length }}</small></span>
+    <span class="panel__tab">{{ 'airports.panel.tab' | t }} <small>{{ filtered().length }}</small></span>
   </div>
 
   <div class="panel__filters">
     <input
       type="search"
-      placeholder="Search airport or city…"
+      [placeholder]="'airports.panel.search' | t"
       [value]="search()"
       (input)="search.set($any($event.target).value)" />
-    <select [value]="filter()" (change)="filter.set($any($event.target).value)" aria-label="Filter by coordinates">
-      <option value="all">All</option>
-      <option value="located">On map</option>
-      <option value="missing">No coords</option>
+    <select [value]="filter()" (change)="filter.set($any($event.target).value)" [attr.aria-label]="'airports.panel.filterLabel' | t">
+      <option value="all">{{ 'airports.panel.all' | t }}</option>
+      <option value="located">{{ 'airports.panel.onMap' | t }}</option>
+      <option value="missing">{{ 'airports.panel.noCoords' | t }}</option>
     </select>
   </div>
 
@@ -26,24 +26,24 @@
             <small>{{ airport.city }}</small>
           </span>
           <span class="tag" [class.tag--muted]="!hasCoordinates(airport)">
-            {{ hasCoordinates(airport) ? 'On map' : 'No coords' }}
+            {{ (hasCoordinates(airport) ? 'airports.panel.onMap' : 'airports.panel.noCoords') | t }}
           </span>
         </button>
 
         @if (selectedId() === airport.id) {
           <div class="detail">
             <dl>
-              <div><dt>Latitude</dt><dd>{{ airport.latitude | number: '1.4-4' }}</dd></div>
-              <div><dt>Longitude</dt><dd>{{ airport.longitude | number: '1.4-4' }}</dd></div>
-              <div><dt>City</dt><dd>{{ airport.city }}</dd></div>
-              <div><dt>ID</dt><dd>{{ airport.id }}</dd></div>
+              <div><dt>{{ 'airports.fields.latitude' | t }}</dt><dd>{{ airport.latitude | number: '1.4-4' : i18n.locale() }}</dd></div>
+              <div><dt>{{ 'airports.fields.longitude' | t }}</dt><dd>{{ airport.longitude | number: '1.4-4' : i18n.locale() }}</dd></div>
+              <div><dt>{{ 'airports.fields.city' | t }}</dt><dd>{{ airport.city }}</dd></div>
+              <div><dt>{{ 'airports.fields.id' | t }}</dt><dd>{{ airport.id }}</dd></div>
             </dl>
-            <a class="btn btn--ghost detail__open" [routerLink]="['/airports', airport.id]">Open detail →</a>
+            <a class="btn btn--ghost detail__open" [routerLink]="['/airports', airport.id]">{{ 'airports.panel.openDetail' | t }}</a>
           </div>
         }
       </li>
     } @empty {
-      <li class="empty">No airport matches the filter.</li>
+      <li class="empty">{{ 'airports.panel.noMatch' | t }}</li>
     }
   </ul>
 </aside>

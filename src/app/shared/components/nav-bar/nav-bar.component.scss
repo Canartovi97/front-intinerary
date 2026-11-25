@@ -92,7 +92,32 @@
   &__user {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 6px;
+  }
+
+  &__lang {
+    display: inline-flex;
+    padding: 2px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+
+    button {
+      padding: 3px 9px;
+      border: 0;
+      border-radius: var(--radius-pill);
+      background: none;
+      color: var(--color-text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+
+      &.active {
+        background: var(--color-primary);
+        color: var(--color-on-primary);
+      }
+    }
   }
 
   &__email {

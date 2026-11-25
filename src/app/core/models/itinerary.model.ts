@@ -97,41 +97,30 @@ export type ItineraryPayload = Omit<
   'id' | 'userId' | 'createdAt' | 'returnDate' | 'documentsExpiringDuringTrip'
 >;
 
-/** Human-readable labels for the enum values shown in the UI. */
-export const LABELS = {
-  tripType: { ROUND_TRIP: 'Round trip', ONE_WAY: 'One way' } satisfies Record<TripType, string>,
-  cabinClass: {
-    ECONOMY: 'Economy',
-    PREMIUM_ECONOMY: 'Premium economy',
-    BUSINESS: 'Business',
-    FIRST: 'First'
-  } satisfies Record<CabinClass, string>,
-  lodgingType: {
-    NONE: 'Not decided yet',
-    HOTEL: 'Hotel',
-    HOSTEL: 'Hostel',
-    APARTMENT: 'Apartment / rental',
-    FAMILY_FRIENDS: 'Family or friends',
-    OTHER: 'Other'
-  } satisfies Record<LodgingType, string>,
-  status: {
-    PLANNED: 'Planned',
-    CONFIRMED: 'Confirmed',
-    COMPLETED: 'Completed',
-    CANCELLED: 'Cancelled'
-  } satisfies Record<ItineraryStatus, string>,
-  documentType: {
-    PASSPORT: 'Passport',
-    NATIONAL_ID: 'National ID',
-    VISA: 'Visa',
-    TRAVEL_INSURANCE: 'Travel insurance',
-    VACCINATION: 'Vaccination card',
-    TICKET: 'Ticket / booking',
-    OTHER: 'Other'
-  } satisfies Record<DocumentType, string>
-};
-
-/** `Object.keys` typed for a label map, preserving its declaration order. */
-export function optionsOf<K extends string>(labels: Record<K, string>): K[] {
-  return Object.keys(labels) as K[];
-}
+/** Options in display order; their texts live in the i18n files under itineraries.labels.*. */
+export const TRIP_TYPES: readonly TripType[] = ['ROUND_TRIP', 'ONE_WAY'];
+export const CABIN_CLASSES: readonly CabinClass[] = ['ECONOMY', 'PREMIUM_ECONOMY', 'BUSINESS', 'FIRST'];
+export const LODGING_TYPES: readonly LodgingType[] = [
+  'NONE',
+  'HOTEL',
+  'HOSTEL',
+  'APARTMENT',
+  'FAMILY_FRIENDS',
+  'OTHER'
+];
+export const CURRENCIES: readonly Currency[] = ['COP', 'USD', 'EUR'];
+export const ITINERARY_STATUSES: readonly ItineraryStatus[] = [
+  'PLANNED',
+  'CONFIRMED',
+  'COMPLETED',
+  'CANCELLED'
+];
+export const DOCUMENT_TYPES: readonly DocumentType[] = [
+  'PASSPORT',
+  'NATIONAL_ID',
+  'VISA',
+  'TRAVEL_INSURANCE',
+  'VACCINATION',
+  'TICKET',
+  'OTHER'
+];

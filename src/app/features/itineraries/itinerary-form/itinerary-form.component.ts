@@ -6,6 +6,8 @@ import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } fr
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { distinctUntilChanged, of, switchMap, catchError } from 'rxjs';
 
+import { I18nService } from '../../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { AirportService } from '../../../core/services/airport.service';
 import { ItineraryService } from '../../../core/services/itinerary.service';
@@ -18,12 +20,16 @@ import {
   ItineraryPayload,
   ItineraryStatus,
   LodgingType,
-  LABELS,
   PlannedAttraction,
+  CABIN_CLASSES,
+  CURRENCIES,
+  DOCUMENT_TYPES,
+  ITINERARY_STATUSES,
+  LODGING_TYPES,
+  TRIP_TYPES,
   TourGuide,
   TravelDocument,
-  TripType,
-  optionsOf
+  TripType
 } from '../../../core/models/itinerary.model';
 import {
   atLeastOneContactValidator,
@@ -42,7 +48,7 @@ export const MAX_TRAVELERS = 9;
 @Component({
   selector: 'app-itinerary-form',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, LoadingSpinnerComponent, DatePipe, DecimalPipe],
+  imports: [ReactiveFormsModule, RouterLink, LoadingSpinnerComponent, DatePipe, DecimalPipe, TranslatePipe],
   templateUrl: './itinerary-form.component.html',
   styleUrl: './itinerary-form.component.scss'
 })
@@ -68,13 +74,13 @@ export class ItineraryFormComponent implements OnInit {
   /** Attraction photos are third-party links; the ones that fail get a placeholder. */
   brokenImages = new Set<number>();
 
-  protected readonly labels = LABELS;
-  protected readonly tripTypes = optionsOf(LABELS.tripType);
-  protected readonly cabinClasses = optionsOf(LABELS.cabinClass);
-  protected readonly lodgingTypes = optionsOf(LABELS.lodgingType);
-  protected readonly statuses = optionsOf(LABELS.status);
-  protected readonly documentTypes = optionsOf(LABELS.documentType);
-  protected readonly currencies = ['COP', 'USD', 'EUR'] as const;
+  protected readonly tripTypes = TRIP_TYPES;
+  protected readonly cabinClasses = CABIN_CLASSES;
+  protected readonly lodgingTypes = LODGING_TYPES;
+  protected readonly statuses = ITINERARY_STATUSES;
+  protected readonly documentTypes = DOCUMENT_TYPES;
+  protected readonly currencies = CURRENCIES;
+  protected readonly i18n = inject(I18nService);
 
   private readonly fb = inject(FormBuilder);
   private readonly airportService = inject(AirportService);
@@ -262,7 +268,7 @@ export class ItineraryFormComponent implements OnInit {
       error: (err: HttpErrorResponse) => {
         this.saving = false;
         this.error = true;
-        this.saveErrorMessage = saveErrorMessage(err);
+        this.saveErrorMessage = saveErrorMessage(err, this.i18n);
       }
     });
   }
@@ -388,15 +394,18 @@ function text(value: string | null | undefined): string | null {
 }
 
 /** Maps the itinerary-service's error statuses to a message the user can act on. */
-function saveErrorMessage(err: HttpErrorResponse): string {
+function saveErrorMessage(err: HttpErrorResponse, i18n: I18nService): string {
   switch (err.status) {
     case 404:
-      return 'One of the airports does not exist. Pick the origin and destination again.';
+      return i18n.t('itineraries.form.errors.airportNotFound');
     case 503:
-      return 'The Airport Service is unavailable, so the airports could not be validated. Nothing was saved — try again later.';
-    case 400:
-      return [err.error?.message].flat().join(' ') || 'Some fields are invalid.';
+      return i18n.t('itineraries.form.errors.airportServiceDown');
+    case 400: {
+      // The backend's rule messages are in English; keep them as the detail.
+      const detail = [err.error?.message].flat().filter(Boolean).join(' ');
+      return [i18n.t('itineraries.form.errors.invalid'), detail].filter(Boolean).join(' ');
+    }
     default:
-      return 'Could not save the itinerary. Is the itinerary service running?';
+      return i18n.t('itineraries.form.errors.generic');
   }
 }

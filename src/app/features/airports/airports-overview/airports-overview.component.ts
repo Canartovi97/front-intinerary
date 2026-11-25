@@ -5,6 +5,7 @@ import { AirportListComponent } from '../airport-list/airport-list.component';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { AirportService } from '../../../core/services/airport.service';
 import { Airport, hasCoordinates } from '../../../core/models/airport.model';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 
 /**
  * Landing page for the /airports route: KPI row, map on the left and a
@@ -14,7 +15,7 @@ import { Airport, hasCoordinates } from '../../../core/models/airport.model';
 @Component({
   selector: 'app-airports-overview',
   standalone: true,
-  imports: [AirportMapComponent, AirportListComponent, LoadingSpinnerComponent],
+  imports: [AirportMapComponent, AirportListComponent, LoadingSpinnerComponent, TranslatePipe],
   templateUrl: './airports-overview.component.html',
   styleUrl: './airports-overview.component.scss'
 })

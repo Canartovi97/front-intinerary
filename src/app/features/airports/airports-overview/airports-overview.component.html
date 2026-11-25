@@ -1,35 +1,33 @@
 <div class="page airports-overview">
   <div class="page-header page-header--row">
     <div>
-      <h1>Colombian Airports</h1>
-      <p>Sourced from the internal Airport Service — never directly from api-colombia.com.</p>
+      <h1>{{ 'airports.title' | t }}</h1>
+      <p>{{ 'airports.subtitle' | t }}</p>
     </div>
     @if (loading()) {
-      <span class="pill"><i></i>Connecting…</span>
+      <span class="pill"><i></i>{{ 'airports.status.connecting' | t }}</span>
     } @else if (error()) {
-      <span class="pill pill--warn"><i></i>Airport Service unreachable</span>
+      <span class="pill pill--warn"><i></i>{{ 'airports.status.offline' | t }}</span>
     } @else {
-      <span class="pill pill--ok"><i></i>Airport Service online</span>
+      <span class="pill pill--ok"><i></i>{{ 'airports.status.online' | t }}</span>
     }
   </div>
 
   <section class="kpis">
-    <div class="kpi"><span>Airports</span><b>{{ loading() ? '—' : airports().length }}</b></div>
-    <div class="kpi kpi--accent"><span>On the map</span><b>{{ loading() ? '—' : located() }}</b></div>
-    <div class="kpi kpi--ok"><span>Cities</span><b>{{ loading() ? '—' : cities() }}</b></div>
-    <div class="kpi kpi--muted"><span>No coordinates</span><b>{{ loading() ? '—' : airports().length - located() }}</b></div>
+    <div class="kpi"><span>{{ 'airports.kpi.airports' | t }}</span><b>{{ loading() ? '—' : airports().length }}</b></div>
+    <div class="kpi kpi--accent"><span>{{ 'airports.kpi.onMap' | t }}</span><b>{{ loading() ? '—' : located() }}</b></div>
+    <div class="kpi kpi--ok"><span>{{ 'airports.kpi.cities' | t }}</span><b>{{ loading() ? '—' : cities() }}</b></div>
+    <div class="kpi kpi--muted"><span>{{ 'airports.kpi.noCoordinates' | t }}</span><b>{{ loading() ? '—' : airports().length - located() }}</b></div>
   </section>
 
   @if (loading()) {
-    <div class="card"><app-loading-spinner message="Loading airports..." /></div>
+    <div class="card"><app-loading-spinner [message]="'airports.loading' | t" /></div>
   } @else if (error()) {
     <div class="card">
-      <app-loading-spinner
-        [error]="true"
-        message="Could not reach the airport service. Is it running on the configured URL?" />
+      <app-loading-spinner [error]="true" [message]="'airports.unreachable' | t" />
     </div>
   } @else if (airports().length === 0) {
-    <div class="card"><app-loading-spinner message="No airports registered yet." /></div>
+    <div class="card"><app-loading-spinner [message]="'airports.empty' | t" /></div>
   } @else {
     <div class="airports-overview__grid">
       <app-airport-map

@@ -1,53 +1,53 @@
 <div class="page itinerary-form">
-  <a routerLink="/itineraries" class="back-link">&larr; Back to itineraries</a>
+  <a routerLink="/itineraries" class="back-link">{{ 'itineraries.form.back' | t }}</a>
 
   <div class="page-header">
-    <h1>{{ isEditMode ? 'Edit itinerary' : 'New itinerary' }}</h1>
-    <p>Plan the whole trip here: flights, travelers, lodging, things to do and safety info.</p>
+    <h1>{{ (isEditMode ? 'itineraries.form.editTitle' : 'itineraries.form.newTitle') | t }}</h1>
+    <p>{{ 'itineraries.form.subtitle' | t }}</p>
   </div>
 
   @if (loading) {
-    <div class="card"><app-loading-spinner message="Loading itinerary..." /></div>
+    <div class="card"><app-loading-spinner [message]="'itineraries.form.loading' | t" /></div>
   } @else {
     <form class="itinerary-form__layout" [formGroup]="form" (ngSubmit)="submit()">
       <div class="itinerary-form__sections">
         <!-- 1. Trip -->
         <section class="card section">
-          <h2><span class="section__num">1</span>Trip</h2>
+          <h2><span class="section__num">1</span>{{ 'itineraries.form.sections.trip' | t }}</h2>
 
           <div class="field">
-            <label for="name">Name</label>
-            <input id="name" type="text" formControlName="name" maxlength="100" placeholder="e.g. Vacaciones en Cartagena" />
+            <label for="name">{{ 'itineraries.form.name' | t }}</label>
+            <input id="name" type="text" formControlName="name" maxlength="100" [placeholder]="'itineraries.form.namePlaceholder' | t" />
             @if (f.name.touched && (f.name.hasError('required') || f.name.hasError('blank'))) {
-              <p class="field__error">Name is required.</p>
+              <p class="field__error">{{ 'itineraries.form.nameRequired' | t }}</p>
             }
           </div>
 
           @if (airportsError) {
-            <p class="field__error">Could not load the airport list. Is the Airport Service running?</p>
+            <p class="field__error">{{ 'itineraries.form.airportsUnavailable' | t }}</p>
           }
 
           <div class="grid-2">
             <div class="field">
-              <label for="originAirportId">Origin airport</label>
+              <label for="originAirportId">{{ 'itineraries.form.origin' | t }}</label>
               <select id="originAirportId" formControlName="originAirportId">
                 <option value="" disabled>
-                  {{ airportsLoading ? 'Loading airports…' : 'Select the origin airport' }}
+                  {{ (airportsLoading ? 'itineraries.form.loadingAirports' : 'itineraries.form.selectOrigin') | t }}
                 </option>
                 @for (airport of airports; track airport.id) {
                   <option [value]="airportValue(airport)">{{ airport.name }} — {{ airport.city }}</option>
                 }
               </select>
               @if (f.originAirportId.touched && f.originAirportId.hasError('required')) {
-                <p class="field__error">Origin airport is required.</p>
+                <p class="field__error">{{ 'itineraries.form.originRequired' | t }}</p>
               }
             </div>
 
             <div class="field">
-              <label for="destinationAirportId">Destination airport</label>
+              <label for="destinationAirportId">{{ 'itineraries.form.destination' | t }}</label>
               <select id="destinationAirportId" formControlName="destinationAirportId">
                 <option value="" disabled>
-                  {{ airportsLoading ? 'Loading airports…' : 'Select the destination airport' }}
+                  {{ (airportsLoading ? 'itineraries.form.loadingAirports' : 'itineraries.form.selectDestination') | t }}
                 </option>
                 @for (airport of airports; track airport.id) {
                   <option
@@ -58,22 +58,22 @@
                 }
               </select>
               @if (f.destinationAirportId.touched && f.destinationAirportId.hasError('required')) {
-                <p class="field__error">Destination airport is required.</p>
+                <p class="field__error">{{ 'itineraries.form.destinationRequired' | t }}</p>
               }
             </div>
           </div>
 
           @if (form.touched && form.hasError('sameOriginDestination')) {
-            <p class="field__error">Origin and destination must be different airports.</p>
+            <p class="field__error">{{ 'itineraries.form.sameAirports' | t }}</p>
           }
 
           <div class="field">
-            <label>Trip type</label>
+            <label>{{ 'itineraries.form.tripType' | t }}</label>
             <div class="segmented" role="radiogroup">
               @for (type of tripTypes; track type) {
                 <label class="segmented__option" [class.active]="f.tripType.value === type">
                   <input type="radio" formControlName="tripType" [value]="type" />
-                  {{ labels.tripType[type] }}
+                  {{ 'itineraries.labels.tripType.' + type | t }}
                 </label>
               }
             </div>
@@ -81,91 +81,91 @@
 
           <div class="grid-3">
             <div class="field">
-              <label for="departureDate">Departure date</label>
+              <label for="departureDate">{{ 'itineraries.form.departure' | t }}</label>
               <input id="departureDate" type="date" formControlName="departureDate" />
               @if (f.departureDate.touched && f.departureDate.hasError('required')) {
-                <p class="field__error">Departure date is required.</p>
+                <p class="field__error">{{ 'itineraries.form.departureRequired' | t }}</p>
               }
               @if (f.departureDate.touched && f.departureDate.hasError('pastDate')) {
-                <p class="field__error">Departure date cannot be in the past.</p>
+                <p class="field__error">{{ 'itineraries.form.departurePast' | t }}</p>
               }
             </div>
 
             <div class="field">
-              <label for="durationDays">Duration (days)</label>
+              <label for="durationDays">{{ 'itineraries.form.duration' | t }}</label>
               <input id="durationDays" type="number" formControlName="durationDays" min="1" />
               @if (f.durationDays.touched && f.durationDays.hasError('min')) {
-                <p class="field__error">Duration must be greater than 0.</p>
+                <p class="field__error">{{ 'itineraries.form.durationMin' | t }}</p>
               }
             </div>
 
             <div class="field">
-              <label>{{ f.tripType.value === 'ROUND_TRIP' ? 'Return flight' : 'Trip ends' }}</label>
-              <p class="computed">{{ endDate ? (endDate | date: 'EEE d MMM y' : 'UTC') : '—' }}</p>
+              <label>{{ (f.tripType.value === 'ROUND_TRIP' ? 'itineraries.form.returnFlight' : 'itineraries.form.tripEnds') | t }}</label>
+              <p class="computed">{{ endDate ? (endDate | date: 'EEE d MMM y' : 'UTC' : i18n.locale()) : '—' }}</p>
             </div>
           </div>
         </section>
 
         <!-- 2. Travelers -->
         <section class="card section" formGroupName="travelers">
-          <h2><span class="section__num">2</span>Travelers</h2>
+          <h2><span class="section__num">2</span>{{ 'itineraries.form.sections.travelers' | t }}</h2>
           <div class="grid-3">
             <div class="field">
-              <label for="adults">Adults</label>
+              <label for="adults">{{ 'itineraries.form.adults' | t }}</label>
               <input id="adults" type="number" formControlName="adults" min="1" max="9" />
             </div>
             <div class="field">
-              <label for="children">Children</label>
+              <label for="children">{{ 'itineraries.form.children' | t }}</label>
               <input id="children" type="number" formControlName="children" min="0" max="8" />
             </div>
             <div class="field">
-              <label for="cabinClass">Cabin class</label>
+              <label for="cabinClass">{{ 'itineraries.form.cabinClass' | t }}</label>
               <select id="cabinClass" formControlName="cabinClass">
                 @for (cabin of cabinClasses; track cabin) {
-                  <option [value]="cabin">{{ labels.cabinClass[cabin] }}</option>
+                  <option [value]="cabin">{{ 'itineraries.labels.cabinClass.' + cabin | t }}</option>
                 }
               </select>
             </div>
           </div>
           @if (f.travelers.hasError('tooManyTravelers')) {
-            <p class="field__error">At most 9 travelers per itinerary.</p>
+            <p class="field__error">{{ 'itineraries.form.tooManyTravelers' | t }}</p>
           }
           @if (f.travelers.controls.adults.hasError('min')) {
-            <p class="field__error">At least one adult must travel.</p>
+            <p class="field__error">{{ 'itineraries.form.adultRequired' | t }}</p>
           }
         </section>
 
         <!-- 3. Lodging & budget -->
         <section class="card section">
-          <h2><span class="section__num">3</span>Lodging &amp; budget</h2>
+          <h2><span class="section__num">3</span>{{ 'itineraries.form.sections.lodging' | t }}</h2>
           <div class="grid-3" formGroupName="lodging">
             <div class="field">
-              <label for="lodgingType">Lodging</label>
+              <label for="lodgingType">{{ 'itineraries.form.lodging' | t }}</label>
               <select id="lodgingType" formControlName="type">
                 @for (type of lodgingTypes; track type) {
-                  <option [value]="type">{{ labels.lodgingType[type] }}</option>
+                  <option [value]="type">{{ 'itineraries.labels.lodgingType.' + type | t }}</option>
                 }
               </select>
             </div>
             <div class="field">
-              <label for="lodgingName">Place name</label>
-              <input id="lodgingName" type="text" formControlName="name" placeholder="e.g. Hotel Caribe" />
+              <label for="lodgingName">{{ 'itineraries.form.placeName' | t }}</label>
+              <input id="lodgingName" type="text" formControlName="name" [placeholder]="'itineraries.form.placePlaceholder' | t" />
             </div>
             <div class="field">
-              <label for="lodgingAddress">Address</label>
+              <label for="lodgingAddress">{{ 'itineraries.form.address' | t }}</label>
               <input id="lodgingAddress" type="text" formControlName="address" />
             </div>
           </div>
           <div class="grid-budget" formGroupName="budget">
             <div class="field">
-              <label for="budgetAmount">Estimated budget</label>
+              <label for="budgetAmount">{{ 'itineraries.form.budget' | t }}</label>
               <input id="budgetAmount" type="number" formControlName="amount" min="0" step="1000" placeholder="0" />
               @if (f.budget.controls.amount.hasError('min')) {
-                <p class="field__error">Budget cannot be negative.</p>
+                <p class="field__error">{{ 'itineraries.form.budgetNegative' | t }}</p>
               }
             </div>
             <div class="field">
-              <label for="currency">Currency</label>
+              <label for="currency">{{ 'itineraries.form.currency' | t }}</label>
               <select id="currency" formControlName="currency">
                 @for (currency of currencies; track currency) {
                   <option [value]="currency">{{ currency }}</option>
@@ -177,17 +177,17 @@
 
         <!-- 4. Things to do & guides -->
         <section class="card section">
-          <h2><span class="section__num">4</span>Things to do &amp; guides</h2>
+          <h2><span class="section__num">4</span>{{ 'itineraries.form.sections.activities' | t }}</h2>
 
-          <h3>Attractions at the destination</h3>
+          <h3>{{ 'itineraries.form.attractionsTitle' | t }}</h3>
           @if (!f.destinationAirportId.value) {
-            <p class="hint">Pick a destination to see what there is to do around it.</p>
+            <p class="hint">{{ 'itineraries.form.pickDestination' | t }}</p>
           } @else if (attractionsLoading) {
-            <p class="hint">Looking for attractions around {{ destinationAirport?.city }}…</p>
+            <p class="hint">{{ 'itineraries.form.lookingAttractions' | t: { city: destinationAirport?.city ?? '' } }}</p>
           } @else if (attractionsError) {
-            <p class="field__error">Could not load attractions right now. You can still add guides below.</p>
+            <p class="field__error">{{ 'itineraries.form.attractionsError' | t }}</p>
           } @else if (attractions.length === 0) {
-            <p class="hint">No attractions registered for this destination's department yet.</p>
+            <p class="hint">{{ 'itineraries.form.noAttractions' | t }}</p>
           } @else {
             <div class="attractions">
               @for (attraction of attractions; track attraction.id) {
@@ -212,7 +212,7 @@
                     <small>{{ attraction.city }}</small>
                     <span class="attraction__desc">{{ attraction.description }}</span>
                   </span>
-                  <span class="attraction__check">{{ isAttractionSelected(attraction) ? '✓ Added' : '+ Add' }}</span>
+                  <span class="attraction__check">{{ (isAttractionSelected(attraction) ? 'itineraries.form.added' : 'itineraries.form.add') | t }}</span>
                 </button>
               }
             </div>
@@ -223,178 +223,178 @@
               @for (picked of selectedAttractions.values(); track picked.attractionId) {
                 <span class="chip">
                   {{ picked.name }} · {{ picked.city }}
-                  <button type="button" (click)="removeAttraction(picked.attractionId)" aria-label="Remove">×</button>
+                  <button type="button" (click)="removeAttraction(picked.attractionId)" [attr.aria-label]="'common.remove' | t">×</button>
                 </span>
               }
             </div>
           }
 
-          <h3>Tour guides &amp; operators</h3>
-          <p class="hint">Guides or agencies you hired or want to contact at the destination.</p>
+          <h3>{{ 'itineraries.form.guidesTitle' | t }}</h3>
+          <p class="hint">{{ 'itineraries.form.guidesHint' | t }}</p>
           <div formArrayName="guides" class="rows">
             @for (guide of guides.controls; track guide; let i = $index) {
               <div class="row-card" [formGroupName]="i">
                 <div class="grid-2">
                   <div class="field">
-                    <label [attr.for]="'guide-' + i + '-name'">Name / agency</label>
+                    <label [attr.for]="'guide-' + i + '-name'">{{ 'itineraries.form.guideName' | t }}</label>
                     <input type="text" [id]="'guide-' + i + '-name'" formControlName="name" />
                   </div>
                   <div class="field">
-                    <label [attr.for]="'guide-' + i + '-language'">Languages</label>
-                    <input type="text" [id]="'guide-' + i + '-language'" formControlName="language" placeholder="Español, English" />
+                    <label [attr.for]="'guide-' + i + '-language'">{{ 'itineraries.form.languages' | t }}</label>
+                    <input type="text" [id]="'guide-' + i + '-language'" formControlName="language" [placeholder]="'itineraries.form.languagesPlaceholder' | t" />
                   </div>
                   <div class="field">
-                    <label [attr.for]="'guide-' + i + '-phone'">Phone / WhatsApp</label>
+                    <label [attr.for]="'guide-' + i + '-phone'">{{ 'itineraries.form.phoneWhatsapp' | t }}</label>
                     <input type="tel" [id]="'guide-' + i + '-phone'" formControlName="phone" />
                   </div>
                   <div class="field">
-                    <label [attr.for]="'guide-' + i + '-email'">Email</label>
+                    <label [attr.for]="'guide-' + i + '-email'">{{ 'itineraries.form.emailLabel' | t }}</label>
                     <input type="email" [id]="'guide-' + i + '-email'" formControlName="email" />
                   </div>
                 </div>
                 <div class="field">
-                  <label [attr.for]="'guide-' + i + '-notes'">Notes</label>
-                  <input type="text" [id]="'guide-' + i + '-notes'" formControlName="notes" placeholder="Tour, day, time, price…" />
+                  <label [attr.for]="'guide-' + i + '-notes'">{{ 'itineraries.form.notes' | t }}</label>
+                  <input type="text" [id]="'guide-' + i + '-notes'" formControlName="notes" [placeholder]="'itineraries.form.guideNotesPlaceholder' | t" />
                 </div>
                 @if (guide.touched && guide.hasError('contactRequired')) {
-                  <p class="field__error">Add a phone or an email to reach this guide.</p>
+                  <p class="field__error">{{ 'itineraries.form.guideContactRequired' | t }}</p>
                 }
                 @if (guide.get('email')?.hasError('email')) {
-                  <p class="field__error">Enter a valid email.</p>
+                  <p class="field__error">{{ 'itineraries.form.emailInvalid' | t }}</p>
                 }
-                <button type="button" class="link-remove" (click)="guides.removeAt(i)">Remove guide</button>
+                <button type="button" class="link-remove" (click)="guides.removeAt(i)">{{ 'itineraries.form.removeGuide' | t }}</button>
               </div>
             }
           </div>
           @if (guides.length < 10) {
-            <button type="button" class="btn btn--ghost" (click)="addGuide()">+ Add guide</button>
+            <button type="button" class="btn btn--ghost" (click)="addGuide()">{{ 'itineraries.form.addGuide' | t }}</button>
           }
         </section>
 
         <!-- 5. Safety -->
         <section class="card section">
-          <h2><span class="section__num">5</span>Safety information</h2>
+          <h2><span class="section__num">5</span>{{ 'itineraries.form.sections.safety' | t }}</h2>
 
-          <h3>Emergency contacts</h3>
+          <h3>{{ 'itineraries.form.contactsTitle' | t }}</h3>
           <div formArrayName="emergencyContacts" class="rows">
             @for (contact of emergencyContacts.controls; track contact; let i = $index) {
               <div class="row-card" [formGroupName]="i">
                 <div class="grid-3">
                   <div class="field">
-                    <label [attr.for]="'contact-' + i + '-name'">Name</label>
+                    <label [attr.for]="'contact-' + i + '-name'">{{ 'itineraries.form.contactName' | t }}</label>
                     <input type="text" [id]="'contact-' + i + '-name'" formControlName="name" />
                   </div>
                   <div class="field">
-                    <label [attr.for]="'contact-' + i + '-relationship'">Relationship</label>
-                    <input type="text" [id]="'contact-' + i + '-relationship'" formControlName="relationship" placeholder="Mother, friend…" />
+                    <label [attr.for]="'contact-' + i + '-relationship'">{{ 'itineraries.form.relationship' | t }}</label>
+                    <input type="text" [id]="'contact-' + i + '-relationship'" formControlName="relationship" [placeholder]="'itineraries.form.relationshipPlaceholder' | t" />
                   </div>
                   <div class="field">
-                    <label [attr.for]="'contact-' + i + '-phone'">Phone</label>
+                    <label [attr.for]="'contact-' + i + '-phone'">{{ 'itineraries.form.phone' | t }}</label>
                     <input type="tel" [id]="'contact-' + i + '-phone'" formControlName="phone" />
                   </div>
                 </div>
                 @if (contact.touched && contact.invalid) {
-                  <p class="field__error">Name and phone are required.</p>
+                  <p class="field__error">{{ 'itineraries.form.contactRequired' | t }}</p>
                 }
-                <button type="button" class="link-remove" (click)="emergencyContacts.removeAt(i)">Remove contact</button>
+                <button type="button" class="link-remove" (click)="emergencyContacts.removeAt(i)">{{ 'itineraries.form.removeContact' | t }}</button>
               </div>
             }
           </div>
           @if (emergencyContacts.length < 5) {
-            <button type="button" class="btn btn--ghost" (click)="addEmergencyContact()">+ Add emergency contact</button>
+            <button type="button" class="btn btn--ghost" (click)="addEmergencyContact()">{{ 'itineraries.form.addContact' | t }}</button>
           }
 
-          <h3>Important documents</h3>
-          <p class="hint">Only a reference (number, policy, booking code) — the document itself is not uploaded.</p>
+          <h3>{{ 'itineraries.form.documentsTitle' | t }}</h3>
+          <p class="hint">{{ 'itineraries.form.documentsHint' | t }}</p>
           <div formArrayName="documents" class="rows">
             @for (doc of documents.controls; track doc; let i = $index) {
               <div class="row-card" [class.row-card--warn]="expiresDuringTrip(i)" [formGroupName]="i">
                 <div class="grid-3">
                   <div class="field">
-                    <label [attr.for]="'document-' + i + '-type'">Document</label>
+                    <label [attr.for]="'document-' + i + '-type'">{{ 'itineraries.form.document' | t }}</label>
                     <select [id]="'document-' + i + '-type'" formControlName="type">
                       @for (type of documentTypes; track type) {
-                        <option [value]="type">{{ labels.documentType[type] }}</option>
+                        <option [value]="type">{{ 'itineraries.labels.documentType.' + type | t }}</option>
                       }
                     </select>
                   </div>
                   <div class="field">
-                    <label [attr.for]="'document-' + i + '-reference'">Number / reference</label>
+                    <label [attr.for]="'document-' + i + '-reference'">{{ 'itineraries.form.reference' | t }}</label>
                     <input type="text" [id]="'document-' + i + '-reference'" formControlName="reference" />
                   </div>
                   <div class="field">
-                    <label [attr.for]="'document-' + i + '-expiresOn'">Expires on</label>
+                    <label [attr.for]="'document-' + i + '-expiresOn'">{{ 'itineraries.form.expiresOn' | t }}</label>
                     <input type="date" [id]="'document-' + i + '-expiresOn'" formControlName="expiresOn" />
                   </div>
                 </div>
                 @if (expiresDuringTrip(i)) {
-                  <p class="warn">⚠ This document expires before the trip ends.</p>
+                  <p class="warn">{{ 'itineraries.form.expiresDuringTrip' | t }}</p>
                 }
-                <button type="button" class="link-remove" (click)="documents.removeAt(i)">Remove document</button>
+                <button type="button" class="link-remove" (click)="documents.removeAt(i)">{{ 'itineraries.form.removeDocument' | t }}</button>
               </div>
             }
           </div>
           @if (documents.length < 10) {
-            <button type="button" class="btn btn--ghost" (click)="addDocument()">+ Add document</button>
+            <button type="button" class="btn btn--ghost" (click)="addDocument()">{{ 'itineraries.form.addDocument' | t }}</button>
           }
         </section>
 
         <!-- 6. Status & notes -->
         <section class="card section">
-          <h2><span class="section__num">6</span>Status &amp; notes</h2>
+          <h2><span class="section__num">6</span>{{ 'itineraries.form.sections.status' | t }}</h2>
           <div class="field">
-            <label>Status</label>
+            <label>{{ 'itineraries.form.status' | t }}</label>
             <div class="segmented" role="radiogroup">
               @for (status of statuses; track status) {
                 <label class="segmented__option" [class.active]="f.status.value === status" [attr.data-status]="status">
                   <input type="radio" formControlName="status" [value]="status" />
-                  {{ labels.status[status] }}
+                  {{ 'itineraries.labels.status.' + status | t }}
                 </label>
               }
             </div>
           </div>
           <div class="field">
-            <label for="notes">Notes</label>
-            <textarea id="notes" formControlName="notes" rows="4" maxlength="2000" placeholder="Anything else to remember for this trip"></textarea>
+            <label for="notes">{{ 'itineraries.form.notes' | t }}</label>
+            <textarea id="notes" formControlName="notes" rows="4" maxlength="2000" [placeholder]="'itineraries.form.notesPlaceholder' | t"></textarea>
           </div>
         </section>
       </div>
 
       <!-- Summary -->
       <aside class="card summary">
-        <h2>Summary</h2>
+        <h2>{{ 'itineraries.form.summary.title' | t }}</h2>
         <dl>
-          <div><dt>Route</dt><dd>{{ destinationAirport?.city || '—' }}</dd></div>
-          <div><dt>Trip</dt><dd>{{ labels.tripType[f.tripType.value] }}</dd></div>
-          <div><dt>Ends</dt><dd>{{ endDate ? (endDate | date: 'd MMM y' : 'UTC') : '—' }}</dd></div>
+          <div><dt>{{ 'itineraries.form.summary.route' | t }}</dt><dd>{{ destinationAirport?.city || '—' }}</dd></div>
+          <div><dt>{{ 'itineraries.form.summary.trip' | t }}</dt><dd>{{ 'itineraries.labels.tripType.' + f.tripType.value | t }}</dd></div>
+          <div><dt>{{ 'itineraries.form.summary.ends' | t }}</dt><dd>{{ endDate ? (endDate | date: 'd MMM y' : 'UTC' : i18n.locale()) : '—' }}</dd></div>
           <div>
-            <dt>Travelers</dt>
-            <dd>{{ f.travelers.value.adults || 0 }} adults · {{ f.travelers.value.children || 0 }} children</dd>
+            <dt>{{ 'itineraries.form.summary.travelers' | t }}</dt>
+            <dd>{{ 'itineraries.form.summary.travelersValue' | t: { adults: f.travelers.value.adults || 0, children: f.travelers.value.children || 0 } }}</dd>
           </div>
           <div>
-            <dt>Budget</dt>
+            <dt>{{ 'itineraries.form.summary.budget' | t }}</dt>
             <dd>
-              {{ f.budget.value.amount != null && $any(f.budget.value.amount) !== '' ? (f.budget.value.amount | number: '1.0-0') + ' ' + f.budget.value.currency : '—' }}
+              {{ f.budget.value.amount != null && $any(f.budget.value.amount) !== '' ? (f.budget.value.amount | number: '1.0-0' : i18n.locale()) + ' ' + f.budget.value.currency : '—' }}
             </dd>
           </div>
-          <div><dt>Attractions</dt><dd>{{ selectedAttractions.size }}</dd></div>
-          <div><dt>Guides</dt><dd>{{ guides.length }}</dd></div>
-          <div><dt>Emergency contacts</dt><dd>{{ emergencyContacts.length }}</dd></div>
-          <div><dt>Documents</dt><dd>{{ documents.length }}</dd></div>
+          <div><dt>{{ 'itineraries.form.summary.attractions' | t }}</dt><dd>{{ selectedAttractions.size }}</dd></div>
+          <div><dt>{{ 'itineraries.form.summary.guides' | t }}</dt><dd>{{ guides.length }}</dd></div>
+          <div><dt>{{ 'itineraries.form.summary.contacts' | t }}</dt><dd>{{ emergencyContacts.length }}</dd></div>
+          <div><dt>{{ 'itineraries.form.summary.documents' | t }}</dt><dd>{{ documents.length }}</dd></div>
         </dl>
 
         @if (error) {
-          <p class="summary__error">⚠ {{ saveErrorMessage || 'Could not load this itinerary.' }}</p>
+          <p class="summary__error">⚠ {{ saveErrorMessage || ('itineraries.form.summary.loadError' | t) }}</p>
         }
         @if (form.invalid && form.touched) {
-          <p class="summary__hint">Some fields need attention.</p>
+          <p class="summary__hint">{{ 'itineraries.form.summary.needsAttention' | t }}</p>
         }
 
         <div class="itinerary-form__actions">
           <button type="submit" class="btn btn--primary" [disabled]="saving">
-            {{ saving ? 'Saving...' : 'Save itinerary' }}
+            {{ (saving ? 'itineraries.form.saving' : 'itineraries.form.save') | t }}
           </button>
-          <a routerLink="/itineraries" class="btn btn--ghost">Cancel</a>
+          <a routerLink="/itineraries" class="btn btn--ghost">{{ 'common.cancel' | t }}</a>
         </div>
       </aside>
     </form>

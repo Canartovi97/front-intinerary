@@ -2,6 +2,7 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, effect, inp
 import * as L from 'leaflet';
 
 import { Airport, hasCoordinates } from '../../../core/models/airport.model';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 
 const COLOMBIA_BOUNDS = L.latLngBounds([-4.3, -79.1], [12.6, -66.8]);
 const MARKER_COLOR = '#ff8a3d';
@@ -10,6 +11,7 @@ const SELECTED_COLOR = '#2fbf71';
 @Component({
   selector: 'app-airport-map',
   standalone: true,
+  imports: [TranslatePipe],
   templateUrl: './airport-map.component.html',
   styleUrl: './airport-map.component.scss'
 })

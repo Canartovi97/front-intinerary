@@ -1,32 +1,30 @@
 <div class="page itinerary-list">
   <div class="page-header page-header--row">
     <div>
-      <h1>Itineraries</h1>
-      <p>Your own planned trips, validated against real airport data.</p>
+      <h1>{{ 'itineraries.list.title' | t }}</h1>
+      <p>{{ 'itineraries.list.subtitle' | t }}</p>
     </div>
-    <a routerLink="/itineraries/new" class="btn btn--primary">+ New itinerary</a>
+    <a routerLink="/itineraries/new" class="btn btn--primary">{{ 'itineraries.list.new' | t }}</a>
   </div>
 
   <div class="card">
     @if (loading) {
-      <app-loading-spinner message="Loading itineraries..." />
+      <app-loading-spinner [message]="'itineraries.list.loading' | t" />
     } @else if (error) {
-      <app-loading-spinner
-        [error]="true"
-        message="Could not reach the itinerary service. Is it running on the configured URL?" />
+      <app-loading-spinner [error]="true" [message]="'itineraries.list.unreachable' | t" />
     } @else if (itineraries.length === 0) {
-      <app-loading-spinner message="No itineraries yet. Create the first one!" />
+      <app-loading-spinner [message]="'itineraries.list.empty' | t" />
     } @else {
       <div class="table-wrapper">
         <table class="table">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Status</th>
-              <th>Route</th>
-              <th>Dates</th>
-              <th>Travelers</th>
-              <th>Plan</th>
+              <th>{{ 'itineraries.list.name' | t }}</th>
+              <th>{{ 'itineraries.list.status' | t }}</th>
+              <th>{{ 'itineraries.list.route' | t }}</th>
+              <th>{{ 'itineraries.list.dates' | t }}</th>
+              <th>{{ 'itineraries.list.travelers' | t }}</th>
+              <th>{{ 'itineraries.list.plan' | t }}</th>
               <th></th>
             </tr>
           </thead>
@@ -35,35 +33,42 @@
               <tr>
                 <td class="itinerary-list__name">{{ itinerary.name }}</td>
                 <td>
-                  <span class="status" [attr.data-status]="itinerary.status">{{ labels.status[itinerary.status] }}</span>
+                  <span class="status" [attr.data-status]="itinerary.status">{{ 'itineraries.labels.status.' + itinerary.status | t }}</span>
                 </td>
                 <td>{{ airportName(itinerary.originAirportId) }} → {{ airportName(itinerary.destinationAirportId) }}</td>
                 <td class="itinerary-list__dates">
-                  {{ itinerary.departureDate | date: 'd MMM y' : 'UTC' }}
+                  {{ itinerary.departureDate | date: 'd MMM y' : 'UTC' : i18n.locale() }}
                   <small>
-                    {{ itinerary.returnDate ? 'Return ' + (itinerary.returnDate | date: 'd MMM' : 'UTC') : 'One way' }}
-                    · {{ itinerary.durationDays }} d
+                    @if (itinerary.returnDate) {
+                      {{ 'itineraries.list.return' | t: { date: (itinerary.returnDate | date: 'd MMM' : 'UTC' : i18n.locale()) ?? '' } }}
+                    } @else {
+                      {{ 'itineraries.list.oneWay' | t }}
+                    }
+                    · {{ 'itineraries.list.days' | t: { n: itinerary.durationDays } }}
                   </small>
                 </td>
-                <td>{{ itinerary.travelers.adults + itinerary.travelers.children }} · {{ labels.cabinClass[itinerary.travelers.cabinClass] }}</td>
+                <td>
+                  {{ itinerary.travelers.adults + itinerary.travelers.children }} ·
+                  {{ 'itineraries.labels.cabinClass.' + itinerary.travelers.cabinClass | t }}
+                </td>
                 <td class="itinerary-list__plan">
                   @if (itinerary.attractions.length) {
-                    <span title="Attractions">📍 {{ itinerary.attractions.length }}</span>
+                    <span [title]="'itineraries.list.planAttractions' | t">📍 {{ itinerary.attractions.length }}</span>
                   }
                   @if (itinerary.guides.length) {
-                    <span title="Guides">🧭 {{ itinerary.guides.length }}</span>
+                    <span [title]="'itineraries.list.planGuides' | t">🧭 {{ itinerary.guides.length }}</span>
                   }
                   @if (itinerary.emergencyContacts.length) {
-                    <span title="Emergency contacts">🆘 {{ itinerary.emergencyContacts.length }}</span>
+                    <span [title]="'itineraries.list.planContacts' | t">🆘 {{ itinerary.emergencyContacts.length }}</span>
                   }
                   @if (itinerary.documentsExpiringDuringTrip.length) {
-                    <span class="warn" title="Documents expiring during the trip">⚠ docs</span>
+                    <span class="warn" [title]="'itineraries.list.planExpiring' | t">{{ 'itineraries.list.expiringDocs' | t }}</span>
                   }
                 </td>
                 <td class="itinerary-list__actions">
-                  <a [routerLink]="['/itineraries', itinerary.id, 'edit']">Open</a>
+                  <a [routerLink]="['/itineraries', itinerary.id, 'edit']">{{ 'itineraries.list.open' | t }}</a>
                   <button type="button" class="link-button" (click)="requestDelete(itinerary.id)">
-                    Delete
+                    {{ 'itineraries.list.delete' | t }}
                   </button>
                 </td>
               </tr>
@@ -76,9 +81,9 @@
 
   <app-confirm-dialog
     [visible]="showDeleteConfirm"
-    title="Delete itinerary"
-    message="This action cannot be undone. Do you want to continue?"
-    confirmLabel="Delete"
+    [title]="'itineraries.list.deleteTitle' | t"
+    [message]="'itineraries.list.deleteMessage' | t"
+    [confirmLabel]="'itineraries.list.delete' | t"
     (confirmed)="confirmDelete()"
     (cancelled)="cancelDelete()" />
 </div>

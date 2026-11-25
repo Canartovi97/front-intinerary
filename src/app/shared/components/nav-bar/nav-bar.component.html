@@ -10,22 +10,33 @@
           </svg>
         </span>
         <span class="nav-bar__titles">
-          <span class="nav-bar__title">Itinerary Planner</span>
-          <span class="nav-bar__subtitle">Colombian airports · trip planning</span>
+          <span class="nav-bar__title">{{ 'app.title' | t }}</span>
+          <span class="nav-bar__subtitle">{{ 'app.subtitle' | t }}</span>
         </span>
       </a>
       <nav class="nav-bar__links">
-        <a routerLink="/airports" routerLinkActive="active">Airports</a>
-        <a routerLink="/itineraries" routerLinkActive="active">Itineraries</a>
+        <a routerLink="/airports" routerLinkActive="active">{{ 'nav.airports' | t }}</a>
+        <a routerLink="/itineraries" routerLinkActive="active">{{ 'nav.itineraries' | t }}</a>
       </nav>
     </div>
-    @if (authService.currentUserEmail(); as email) {
-      <div class="nav-bar__user">
-        <span class="pill pill--ok nav-bar__email"><i></i>{{ email }}</span>
-        <button type="button" class="pill nav-bar__signin" (click)="signOut()">Sign out</button>
+    <div class="nav-bar__user">
+      <div class="nav-bar__lang" role="group" [attr.aria-label]="'nav.language' | t">
+        @for (lang of langs; track lang) {
+          <button
+            type="button"
+            [class.active]="i18n.lang() === lang"
+            [attr.aria-pressed]="i18n.lang() === lang"
+            (click)="i18n.setLang(lang)">
+            {{ lang.toUpperCase() }}
+          </button>
+        }
       </div>
-    } @else {
-      <a routerLink="/login" class="pill nav-bar__signin">Sign in</a>
-    }
+      @if (authService.currentUserEmail(); as email) {
+        <span class="pill pill--ok nav-bar__email"><i></i>{{ email }}</span>
+        <button type="button" class="pill nav-bar__signin" (click)="signOut()">{{ 'nav.signOut' | t }}</button>
+      } @else {
+        <a routerLink="/login" class="pill nav-bar__signin">{{ 'nav.signIn' | t }}</a>
+      }
+    </div>
   </div>
 </header>
