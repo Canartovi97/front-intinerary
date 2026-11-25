@@ -1,63 +1,65 @@
 <div class="page auth-page">
   <div class="page-header">
-    <h1>Create an account</h1>
-    <p>Save and manage your own itineraries.</p>
+    <h1>{{ 'auth.register.title' | t }}</h1>
+    <p>{{ 'auth.register.subtitle' | t }}</p>
   </div>
 
   <div class="card auth-page__card">
     <form [formGroup]="form" (ngSubmit)="submit()">
       <div class="field">
-        <label for="email">Email</label>
+        <label for="email">{{ 'auth.email' | t }}</label>
         <input id="email" type="email" formControlName="email" autocomplete="email" />
         @if (f.email.touched && f.email.hasError('required')) {
-          <p class="field__error">Email is required.</p>
+          <p class="field__error">{{ 'auth.emailRequired' | t }}</p>
         }
         @if (f.email.touched && f.email.hasError('email')) {
-          <p class="field__error">Enter a valid email.</p>
+          <p class="field__error">{{ 'auth.emailInvalid' | t }}</p>
         }
       </div>
 
       <div class="field">
-        <label for="password">Password</label>
+        <label for="password">{{ 'auth.password' | t }}</label>
         <input id="password" type="password" formControlName="password" autocomplete="new-password" />
         @if (f.password.touched && f.password.hasError('required')) {
-          <p class="field__error">Password is required.</p>
+          <p class="field__error">{{ 'auth.passwordRequired' | t }}</p>
         }
         @if (f.password.touched && f.password.hasError('minlength')) {
-          <p class="field__error">Password must be at least 8 characters.</p>
+          <p class="field__error">{{ 'auth.register.passwordMin' | t }}</p>
         }
       </div>
 
       <div class="field">
-        <label for="confirmPassword">Confirm password</label>
+        <label for="confirmPassword">{{ 'auth.register.confirmPassword' | t }}</label>
         <input
           id="confirmPassword"
           type="password"
           formControlName="confirmPassword"
           autocomplete="new-password" />
         @if (f.confirmPassword.touched && f.confirmPassword.hasError('required')) {
-          <p class="field__error">Please confirm your password.</p>
+          <p class="field__error">{{ 'auth.register.confirmRequired' | t }}</p>
         }
       </div>
 
       @if (form.touched && form.hasError('passwordMismatch')) {
-        <p class="field__error">Passwords do not match.</p>
+        <p class="field__error">{{ 'auth.register.mismatch' | t }}</p>
       }
 
       @if (emailTaken) {
-        <p class="field__error">An account with this email already exists.</p>
+        <p class="field__error">{{ 'auth.register.emailTaken' | t }}</p>
       }
       @if (genericError) {
-        <p class="field__error">Could not create the account. Is the itinerary service running?</p>
+        <p class="field__error">{{ 'auth.register.genericError' | t }}</p>
       }
 
       <div class="auth-page__actions">
         <button type="submit" class="btn btn--primary" [disabled]="submitting">
-          {{ submitting ? 'Creating account...' : 'Create account' }}
+          {{ (submitting ? 'auth.register.submitting' : 'auth.register.submit') | t }}
         </button>
       </div>
 
-      <p class="auth-page__switch">Already have an account? <a routerLink="/login">Sign in</a></p>
+      <p class="auth-page__switch">
+        {{ 'auth.register.haveAccount' | t }} <a routerLink="/login">{{ 'auth.register.signIn' | t }}</a>
+      </p>
     </form>
   </div>
 </div>

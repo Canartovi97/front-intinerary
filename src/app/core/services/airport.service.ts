@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { Airport } from '../models/airport.model';
+import { Airport, TouristAttraction } from '../models/airport.model';
 
 /**
  * Talks to the airport-service (default: http://localhost:3001).
@@ -20,6 +20,11 @@ export class AirportService {
 
   getById(id: string): Observable<Airport> {
     return this.http.get<Airport>(`${this.baseUrl}/${id}`);
+  }
+
+  /** What there is to do around the airport's destination. */
+  getAttractions(id: string): Observable<TouristAttraction[]> {
+    return this.http.get<TouristAttraction[]>(`${this.baseUrl}/${id}/attractions`);
   }
 
   create(airport: Omit<Airport, 'id'>): Observable<Airport> {

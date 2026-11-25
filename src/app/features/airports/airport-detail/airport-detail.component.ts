@@ -4,11 +4,12 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { AirportService } from '../../../core/services/airport.service';
 import { Airport } from '../../../core/models/airport.model';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 
 @Component({
   selector: 'app-airport-detail',
   standalone: true,
-  imports: [RouterLink, LoadingSpinnerComponent],
+  imports: [RouterLink, LoadingSpinnerComponent, TranslatePipe],
   templateUrl: './airport-detail.component.html',
   styleUrl: './airport-detail.component.scss'
 })

@@ -1,38 +1,44 @@
-/* Global styles / design tokens */
+/* Global styles / design tokens — dark "operations dashboard" theme */
 
 :root {
-  /* Brand palette (Itinerary UX/UI guide) */
-  --color-bg: #f7fafc; /* Fondo */
-  --color-surface: #ffffff;
-  --color-border: #e2e8f0;
-  --color-text: #0f172a; /* Texto */
-  --color-text-muted: #64748b;
+  --color-bg: #0b0e13;
+  --color-surface: #121722;
+  --color-surface-2: #182031;
+  --color-border: #232c3d;
+  --color-text: #e8ecf3;
+  --color-text-muted: #9aa4b5;
 
-  --color-primary: #0b5ed7; /* Azul Principal */
-  --color-primary-hover: #094bb0;
-  --color-primary-soft: #e7f0fd;
+  --color-primary: #ff8a3d; /* Acento naranja */
+  --color-primary-hover: #ff9f5f;
+  --color-primary-soft: #ff8a3d1f;
+  --color-on-primary: #1a0f06;
 
-  --color-secondary: #3b82f6; /* Azul Secundario */
+  --color-secondary: #5aa9ff;
 
-  --color-accent: #14b8a6; /* Verde Agua */
-  --color-accent-hover: #0f9689;
-  --color-accent-soft: #a7f3d0; /* Aqua Claro */
+  --color-accent: #2fbf71; /* Verde "ok" */
+  --color-accent-hover: #3fd683;
+  --color-accent-soft: #2fbf711f;
 
-  --color-danger: #dc2626;
-  --color-danger-hover: #b91c1c;
-  --color-danger-soft: #fef2f2;
+  --color-danger: #ff4d2e;
+  --color-danger-hover: #ff6a50;
+  --color-danger-soft: #ff4d2e1f;
+
+  --color-warning: #f3c766;
+  --color-offline: #8a8f98;
 
   --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
   --radius-pill: 999px;
 
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
-  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.4);
 
-  --font-sans: 'Inter', -apple-system, 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 
-  --content-max-width: 1400px;
+  --content-max-width: 1600px;
+
+  color-scheme: dark;
 }
 
 * {
@@ -47,25 +53,17 @@ body {
 body {
   margin: 0;
   font-family: var(--font-sans);
+  font-size: 14px;
   background: var(--color-bg);
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
-  position: relative;
 }
 
-/* Soft, ambient hero backdrop instead of a flat page background. Sits
-   behind all content (fixed + negative z-index) and is heavily blurred
-   with a light-tinted overlay so text and cards stay fully readable. */
-body::before {
-  content: '';
-  position: fixed;
-  inset: -40px;
-  z-index: -1;
-  background:
-    linear-gradient(180deg, rgba(15, 23, 42, 0.35) 0%, rgba(247, 250, 252, 0.94) 65%),
-    url('/images/hero-sunset-flight.png') center 30% / cover no-repeat;
-  filter: blur(28px);
-  transform: scale(1.05);
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
 }
 
 h1,
@@ -84,35 +82,36 @@ a {
 .page {
   max-width: var(--content-max-width);
   margin: 0 auto;
-  padding: 1.75rem clamp(0.75rem, 2vw, 1.5rem) 3rem;
+  padding: 16px 16px 24px;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 12px;
 }
 
 .page-header {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 2px;
 
   h1,
   h2 {
     margin: 0;
-    font-size: 1.4rem;
+    font-size: 20px;
   }
 
   p {
     margin: 0;
     color: var(--color-text-muted);
-    font-size: 0.9rem;
+    font-size: 12px;
   }
 }
 
 .page-header--row {
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 10px 16px;
 }
 
 /* Surfaces */
@@ -121,8 +120,105 @@ a {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  padding: 1.5rem;
+  padding: 16px;
+}
+
+/* Pills, KPIs, status dots (shared dashboard primitives) */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-size: 12px;
+  white-space: nowrap;
+
+  i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-offline);
+  }
+
+  &--ok i {
+    background: var(--color-accent);
+    animation: latido 1.6s ease-out infinite;
+  }
+
+  &--warn {
+    border-color: #b8860b88;
+    color: var(--color-warning);
+  }
+}
+
+@keyframes latido {
+  from {
+    box-shadow: 0 0 0 0 #2fbf71aa;
+  }
+  to {
+    box-shadow: 0 0 0 8px #2fbf7100;
+  }
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+}
+
+.kpi {
+  padding: 10px 12px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+
+  span {
+    display: block;
+    color: var(--color-text-muted);
+    font-size: 12px;
+  }
+
+  b {
+    font-size: 22px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &--ok b {
+    color: var(--color-accent);
+  }
+
+  &--accent b {
+    color: var(--color-primary);
+  }
+
+  &--muted b {
+    color: var(--color-offline);
+  }
+}
+
+.dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-accent);
+
+  &--accent {
+    background: var(--color-primary);
+    box-shadow: 0 0 10px var(--color-primary);
+  }
+
+  &--muted {
+    background: var(--color-offline);
+  }
 }
 
 /* Table */
@@ -136,20 +232,21 @@ a {
 .table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  font-size: 13px;
 
   th,
   td {
     text-align: left;
-    padding: 0.7rem 1rem;
+    padding: 10px 12px;
   }
 
   thead th {
-    font-size: 0.72rem;
+    font-size: 11px;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--color-text-muted);
-    background: #f8fafc;
+    background: var(--color-surface-2);
     border-bottom: 1px solid var(--color-border);
   }
 
@@ -162,8 +259,12 @@ a {
     }
 
     &:hover {
-      background: var(--color-primary-soft);
+      background: var(--color-surface-2);
     }
+  }
+
+  td {
+    font-variant-numeric: tabular-nums;
   }
 
   a {
@@ -183,24 +284,24 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  border: 1.5px solid transparent;
-  border-radius: var(--radius-pill);
-  padding: 0.6rem 1.3rem;
-  font-size: 0.9rem;
+  gap: 6px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 9px 14px;
+  font-size: 13px;
   font-weight: 600;
   line-height: 1;
   cursor: pointer;
   text-decoration: none;
+  background: var(--color-surface-2);
+  color: var(--color-text);
   transition:
     background-color 0.15s ease,
     color 0.15s ease,
-    border-color 0.15s ease,
-    box-shadow 0.15s ease,
-    transform 0.05s ease;
+    border-color 0.15s ease;
 
-  &:active {
-    transform: translateY(1px);
+  &:hover:not(:disabled) {
+    border-color: var(--color-text-muted);
   }
 
   &:focus-visible {
@@ -210,46 +311,38 @@ a {
 
   &--primary {
     background: var(--color-primary);
-    color: #fff;
-    box-shadow: var(--shadow-sm);
+    border-color: var(--color-primary);
+    color: var(--color-on-primary);
 
-    &:hover {
+    &:hover:not(:disabled) {
       background: var(--color-primary-hover);
+      border-color: var(--color-primary-hover);
     }
   }
 
   &--outline {
-    background: var(--color-surface);
-    border-color: var(--color-accent);
-    color: var(--color-accent-hover);
-
-    &:hover {
-      background: var(--color-accent-soft);
-    }
+    background: var(--color-accent-soft);
+    border-color: #2fbf7188;
+    color: var(--color-accent);
   }
 
   &--ghost {
-    background: #f1f5f9;
-    color: var(--color-text);
-
-    &:hover {
-      background: var(--color-border);
-    }
+    background: var(--color-surface-2);
   }
 
   &--danger {
-    background: var(--color-danger);
-    color: #fff;
+    background: var(--color-danger-soft);
+    border-color: #ff4d2e88;
+    color: #ffb4a5;
 
-    &:hover {
-      background: var(--color-danger-hover);
+    &:hover:not(:disabled) {
+      border-color: var(--color-danger);
     }
   }
 
   &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
+    opacity: 0.5;
+    cursor: progress;
   }
 }
 
@@ -258,22 +351,25 @@ a {
 .field {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 6px;
+  min-width: 0;
 
   label {
-    font-weight: 600;
-    font-size: 0.85rem;
-    color: #334155;
+    font-weight: 500;
+    font-size: 12px;
+    color: var(--color-text-muted);
   }
 
   input,
   select {
-    padding: 0.55rem 0.7rem;
+    /* A select sizes itself to its longest option; keep it inside the field. */
+    width: 100%;
+    min-width: 0;
+    padding: 9px 10px;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
-    font-size: 0.95rem;
-    font-family: inherit;
-    background: #fff;
+    font-size: 14px;
+    background: var(--color-bg);
     transition:
       border-color 0.15s ease,
       box-shadow 0.15s ease;
@@ -288,6 +384,49 @@ a {
   &__error {
     margin: 0;
     color: var(--color-danger);
-    font-size: 0.8rem;
+    font-size: 12px;
   }
+}
+
+/* Leaflet, dark */
+
+.leaflet-container {
+  font: inherit;
+  background: var(--color-bg);
+}
+
+.leaflet-tooltip {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+}
+
+.leaflet-tooltip-top::before {
+  border-top-color: var(--color-border);
+}
+
+.leaflet-bar a {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  border-color: var(--color-border);
+
+  &:hover {
+    background: var(--color-border);
+  }
+}
+
+.leaflet-control-attribution {
+  background: rgba(11, 14, 19, 0.7) !important;
+  color: var(--color-text-muted);
+
+  a {
+    color: var(--color-text-muted);
+  }
+}
+
+/* OSM tiles rendered as a dark map */
+.dark-tiles {
+  filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9) saturate(0.5);
 }

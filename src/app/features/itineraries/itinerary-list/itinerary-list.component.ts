@@ -1,16 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { AirportService } from '../../../core/services/airport.service';
 import { ItineraryService } from '../../../core/services/itinerary.service';
 import { Itinerary } from '../../../core/models/itinerary.model';
+import { I18nService } from '../../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 
 @Component({
   selector: 'app-itinerary-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, LoadingSpinnerComponent, ConfirmDialogComponent],
+  imports: [CommonModule, RouterLink, LoadingSpinnerComponent, ConfirmDialogComponent, TranslatePipe],
   templateUrl: './itinerary-list.component.html',
   styleUrl: './itinerary-list.component.scss'
 })
@@ -18,14 +21,29 @@ export class ItineraryListComponent implements OnInit {
   loading = true;
   error = false;
   itineraries: Itinerary[] = [];
+  protected readonly i18n = inject(I18nService);
 
   showDeleteConfirm = false;
   pendingDeleteId: string | null = null;
 
-  constructor(private readonly itineraryService: ItineraryService) {}
+  /** Airport id → city, to show routes by name instead of ids. */
+  private airportCities = new Map<string, string>();
+
+  constructor(
+    private readonly itineraryService: ItineraryService,
+    private readonly airportService: AirportService
+  ) {}
 
   ngOnInit(): void {
     this.fetchItineraries();
+    // Best effort: without Airport Service the list still shows airport ids.
+    this.airportService.getAll().subscribe({
+      next: (airports) => (this.airportCities = new Map(airports.map((a) => [String(a.id), a.city])))
+    });
+  }
+
+  airportName(id: string | number): string {
+    return this.airportCities.get(String(id)) ?? `#${id}`;
   }
 
   fetchItineraries(): void {
