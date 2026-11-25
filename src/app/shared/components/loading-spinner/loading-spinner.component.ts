@@ -1,5 +1,7 @@
 import { Component, Input } from '@angular/core';
 
+import { TranslatePipe } from '../../../core/i18n/translate.pipe';
+
 /**
  * Small reusable loading / error / empty state indicator.
  *
@@ -10,6 +12,7 @@ import { Component, Input } from '@angular/core';
 @Component({
   selector: 'app-loading-spinner',
   standalone: true,
+  imports: [TranslatePipe],
   templateUrl: './loading-spinner.component.html',
   styleUrl: './loading-spinner.component.scss'
 })

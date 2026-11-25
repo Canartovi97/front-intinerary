@@ -1,15 +1,5 @@
-<div class="card airport-map">
-  <h2>Airport Map</h2>
-
-  @if (loading) {
-    <app-loading-spinner message="Loading airports..." />
-  } @else if (error) {
-    <app-loading-spinner
-      [error]="true"
-      message="Could not reach the airport service. Is it running on the configured URL?" />
-  } @else if (airports.length === 0) {
-    <app-loading-spinner message="No airports to display yet." />
-  }
-
-  <div #mapContainer class="airport-map__leaflet" [hidden]="loading || error || airports.length === 0"></div>
+<div #mapContainer class="airport-map"></div>
+<div class="airport-map__legend">
+  <span><i style="background: #ff8a3d"></i>{{ 'airports.legend.airport' | t }}</span>
+  <span><i style="background: #2fbf71"></i>{{ 'airports.legend.selected' | t }}</span>
 </div>
